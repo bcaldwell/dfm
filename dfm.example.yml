@@ -1,0 +1,32 @@
+---
+
+repo: benjamincaldwell/dotfiles
+
+alias:
+  clone: git clone 
+
+tasks:
+  zsh:
+    tasks:
+      - "@clone github.com/benjamincaldwell/devctl"
+    links:
+      - .config/blah:.blah
+      - .config/.dah
+
+  linux:
+    when:
+      OS: "linux"
+    # condition: some shell command that returns an error or not
+    deps:
+      - zsh
+
+  darwin:
+    when:
+      OS: "darwin"
+    # condition: some shell command that returns an error or not
+    # parameter: "server" passed in as the second argument 
+    deps:
+      - zsh
+    tasks:
+      - bash mac.sh
+    
