@@ -13,20 +13,37 @@ tasks:
       - .config/blah:.blah
       - .config/.dah
 
+  zsh-linux:
+    when:
+      os: "linux"
+    tasks:
+      - "@clone github.com/benjamincaldwell/devctl"
+    deps:
+      - fish
+
+  zsh-darwin:
+    when:
+      os: "darwin"
+    tasks:
+      - "@clone github.com/benjamincaldwell/devctl"
+    deps:
+      - zsh
+
   linux:
     when:
-      OS: "linux"
+      os: "linux"
     # condition: some shell command that returns an error or not
     deps:
       - zsh
 
   darwin:
     when:
-      OS: "darwin"
+      os: "darwin"
     # condition: some shell command that returns an error or not
     # parameter: "server" passed in as the second argument 
     deps:
       - zsh
+      - zsh-darwin
+      - zsh-linux
     tasks:
       - bash mac.sh
-    
