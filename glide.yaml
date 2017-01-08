@@ -1,0 +1,8 @@
+package: github.com/benjamincaldwell/dfm
+import:
+- package: github.com/benjamincaldwell/devctl
+  repo: git@github.com:benjamincaldwell/devctl.git
+  subpackages:
+  - printer
+  - shell
+- package: gopkg.in/yaml.v2

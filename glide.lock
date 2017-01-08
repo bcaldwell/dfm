@@ -1,0 +1,12 @@
+hash: dd12c524d2353ba3e66f45ac5b518ad7b59979c7c53dcef06cc4163db1459792
+updated: 2017-01-08T08:11:01.334143027-05:00
+imports:
+- name: github.com/benjamincaldwell/devctl
+  version: bd1e3b6b81d10246854de55cb078278bb55a79fa
+  repo: git@github.com:benjamincaldwell/devctl.git
+  subpackages:
+  - printer
+  - shell
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+testImports: []
