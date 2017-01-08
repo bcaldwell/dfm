@@ -1,8 +1,8 @@
 hash: dd12c524d2353ba3e66f45ac5b518ad7b59979c7c53dcef06cc4163db1459792
-updated: 2017-01-08T08:11:01.334143027-05:00
+updated: 2017-01-08T09:26:38.012761593-05:00
 imports:
 - name: github.com/benjamincaldwell/devctl
-  version: bd1e3b6b81d10246854de55cb078278bb55a79fa
+  version: 3474fbd46492dc35727fed4e955175b2843353a6
   repo: git@github.com:benjamincaldwell/devctl.git
   subpackages:
   - printer

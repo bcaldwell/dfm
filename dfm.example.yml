@@ -6,17 +6,21 @@ alias:
   clone: git clone 
 
 tasks:
-  zsh:
-    tasks:
-      - "@clone github.com/benjamincaldwell/devctl"
+  devctl:
+    when:
+      condition: "echo"
+    # cmd:
+    #   - "@clone github.com/benjamincaldwell/devctl"
     links:
-      - .config/blah:.blah
-      - .config/.dah
+      - devctlconfig:.devctlconfig
+  zsh:
+    cmd:
+      - "@clone github.com/benjamincaldwell/devctl"
 
   zsh-linux:
     when:
       os: "linux"
-    tasks:
+    cmd:
       - "@clone github.com/benjamincaldwell/devctl"
     deps:
       - fish
@@ -24,7 +28,7 @@ tasks:
   zsh-darwin:
     when:
       os: "darwin"
-    tasks:
+    cmd:
       - "@clone github.com/benjamincaldwell/devctl"
     deps:
       - zsh
@@ -45,5 +49,5 @@ tasks:
       - zsh
       - zsh-darwin
       - zsh-linux
-    tasks:
+    cmd:
       - bash mac.sh

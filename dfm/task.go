@@ -16,8 +16,9 @@ type Task struct {
 		Parameter string
 	}
 	Deps  []string
-	Tasks []string
+	Cmd   []string
 	Links []string
+	Env   []string
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on
 	importance byte
 }
@@ -28,7 +29,7 @@ func (t Task) calculateImportance(parameter string) byte {
 	} else if parameter != "" && strings.ToLower(parameter) == strings.ToLower(t.When.Parameter) {
 		return 2
 	} else if t.When.Condition != "" {
-		if err := shell.Command("sh", "-c", t.When.Condition).Run; err == nil {
+		if err := shell.Command("sh", "-c", t.When.Condition).PrintOutput(); err == nil {
 			return 2
 		}
 	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" {
@@ -76,4 +77,20 @@ func (t Task) appendTaskDependencyList(dependencies []string, parameter string, 
 		}
 	}
 	return dependencies
+}
+
+func (t Task) execute(config *Configuration) error {
+
+	if len(t.Links) > 0 {
+		printer.Info("Linking")
+	}
+
+	for _, link := range t.Links {
+		err := processLink(link, config)
+		if err != nil {
+			printer.Error("%s", err)
+		}
+	}
+
+	return nil
 }

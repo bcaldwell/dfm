@@ -7,10 +7,11 @@ import (
 )
 
 type Configuration struct {
-	Repo   string
-	Folder string
-	Alias  map[string]string
-	Tasks  map[string]Task
+	Repo    string
+	SrcDir  string
+	DestDir string
+	Alias   map[string]string
+	Tasks   map[string]Task
 }
 
 func parseConfig(file string) (*Configuration, error) {
