@@ -60,19 +60,27 @@ func createLink(src string, dest string, mode os.FileMode, config *Configuration
 		return fmt.Errorf("source path %s does not exist in filesystem", srcAbs)
 	}
 
-	if _, err := os.Stat(destAbs); err == nil && (*force || *overwrite) {
-		printer.VerboseWarningBar("removing %s", destAbs)
-		os.RemoveAll(destAbs)
-	} else {
-		printer.VerboseWarningBar("%s already exists. Use overwrite or force option to overwrite", destAbs)
-		return nil
+	if _, err := os.Stat(destAbs); err == nil {
+		if *force || *overwrite {
+			if *dryRun || *verbose {
+				printer.WarningBar("removing %s", destAbs)
+
+			} else {
+				os.RemoveAll(destAbs)
+			}
+		} else {
+			printer.VerboseInfoBar("Linking %s to %s", srcAbs, destAbs)
+			printer.VerboseWarningBar("%s already exists. Use overwrite or force option to overwrite", destAbs)
+			return nil
+		}
 	}
 
-	if *dryRun {
+	if *dryRun || *verbose {
 		printer.InfoBar("Linking %s to %s", srcAbs, destAbs)
-		return nil
+		if *dryRun {
+			return nil
+		}
 	}
 
-	printer.VerboseInfoBar("Linking %s to %s", srcAbs, destAbs)
 	return os.Symlink(srcAbs, destAbs)
 }

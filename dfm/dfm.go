@@ -22,7 +22,7 @@ func Execute() {
 	overwrite = flag.Bool("overwrite", false, "overwrite existing files or folders when linking")
 	configFile := flag.String("config", "~/dfm.yml", "Sets location of dfm config file or url with config file. Defaults to ~/.dfm.yml.")
 
-	*configFile = "dfm.example.yml"
+	// *configFile = "dfm.example.yml"
 
 	flag.Parse()
 
@@ -37,8 +37,16 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	// printer.Info(*configFile)
-	printer.Info("%b", *dryRun)
+	printer.VerboseInfoBar("Running in verbose mode")
+	if *dryRun {
+		printer.VerboseInfoBar("Running in dryrun mode")
+	}
+	if *force {
+		printer.VerboseInfoBar("Running in force mode")
+	}
+	if *overwrite {
+		printer.VerboseInfoBar("Running in overwrite mode")
+	}
 
 	config, err := parseConfig(*configFile)
 
