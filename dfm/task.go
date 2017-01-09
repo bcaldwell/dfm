@@ -11,9 +11,10 @@ import (
 
 type Task struct {
 	When struct {
-		OS        string
-		Condition string
-		Parameter string
+		OS           string
+		Condition    string
+		Parameter    string
+		NotInstalled string `yaml:"notInstalled"`
 	}
 	Deps  []string
 	Cmd   []string
@@ -23,16 +24,25 @@ type Task struct {
 	importance byte
 }
 
+// look at multiple
 func (t Task) calculateImportance(parameter string) byte {
 	if strings.ToLower(runtime.GOOS) == strings.ToLower(t.When.OS) {
 		return 2
 	} else if parameter != "" && strings.ToLower(parameter) == strings.ToLower(t.When.Parameter) {
 		return 2
 	} else if t.When.Condition != "" {
+		shell.DryRun = false
 		if err := shell.Command("sh", "-c", t.When.Condition).Run(); err == nil {
 			return 2
 		}
-	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" {
+		shell.DryRun = *dryRun
+	} else if t.When.NotInstalled != "" {
+		shell.DryRun = false
+		if err := shell.Command("sh", "-c", "command -v "+t.When.NotInstalled).Run(); err != nil {
+			return 2
+		}
+		shell.DryRun = *dryRun
+	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" && t.When.NotInstalled == "" {
 		return 1
 	}
 	return 0
