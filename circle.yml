@@ -1,7 +1,14 @@
 machine:
   environment:
+    GODIST: "go1.7.3.linux-amd64.tar.gz"
     IMPORT_PATH: "/home/ubuntu/.go_workspace/src/github.com/benjamincaldwell"
     APP_PATH: "$IMPORT_PATH/dfm"
+  post:
+    - mkdir -p downloads
+    - test -e downloads/$GODIST || curl -o downloads/$GODIST https://storage.googleapis.com/golang/$GODIST
+    - sudo rm -rf /usr/local/go
+    - sudo tar -C /usr/local -xzf downloads/$GODIST
+    
 dependencies:
   override:
     - sudo add-apt-repository ppa:masterminds/glide -y

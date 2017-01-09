@@ -13,8 +13,8 @@ then
   go get github.com/mitchellh/gox
   go get github.com/tcnksm/ghr
   echo "Building $BUILD_VERSION"
-  gox -ldflags "-X main.Version=${BUILD_VERSION} -X main.BuildDate=${BUILD_DATE}" -parallel=2 -output "dist/dfm_{{.OS}}_{{.Arch}}"
+  gox -ldflags "-X main.Version=${BUILD_VERSION} -X main.BuildDate=${BUILD_DATE}" -osarch="linux/amd64 darwin/amd64" -parallel=2 -output "dist/dfm_{{.OS}}_{{.Arch}}"
 
-  ghr -t $GITHUB_TOKEN -u devctl -r devctl $BUILD_VERSION dist/
+  ghr -t "$GITHUB_TOKEN" -u benjamincaldwell -r dfm "$BUILD_VERSION" dist/
 
 fi
