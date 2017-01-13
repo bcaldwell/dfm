@@ -103,7 +103,7 @@ func (t Task) execute(config *Configuration) error {
 	}
 
 	if len(t.Links) > 0 {
-		printer.Info("Linking")
+		printer.VerboseInfo("Linking")
 	}
 
 	for _, link := range t.Links {

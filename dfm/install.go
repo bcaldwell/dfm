@@ -15,8 +15,8 @@ func processInstall(args []string, config *Configuration) {
 	taskList = uniqueSliceTransform((taskList))
 	printer.VerboseInfoBar("Running tasks: %s", strings.Join(taskList, ","))
 
-	// for _, task := range taskList {
-	// 	printer.Info("Executing %s\n", task)
-	// 	config.Tasks[task].execute(config)
-	// }
+	for _, task := range taskList {
+		printer.Info("Executing %s\n", task)
+		config.Tasks[task].execute(config)
+	}
 }

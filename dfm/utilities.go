@@ -104,3 +104,19 @@ func DownloadToFile(uri string, dst string) error {
 	}
 	return err
 }
+
+// func expand(s string, mapping func(string) string) string {
+// 	buf := make([]byte, 0, 2*len(s))
+// 	// #{} is all ASCII, so bytes are fine for this operation.
+// 	i := 0
+// 	for j := 0; j < len(s); j++ {
+// 		if s[j] == '#' && j+1 < len(s) {
+// 			buf = append(buf, s[i:j]...)
+// 			name, w := getShellName(s[j+1:])
+// 			buf = append(buf, mapping(name)...)
+// 			j += w
+// 			i = j + 1
+// 		}
+// 	}
+// 	return string(buf) + s[i:]
+// }

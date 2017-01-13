@@ -20,6 +20,8 @@ var overwrite *bool
 var Version string
 var BuildDate string
 
+// set bootstrap env on clone???
+
 // Execute kicks of dfm command
 func Execute() {
 	var config *Configuration
