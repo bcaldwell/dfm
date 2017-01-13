@@ -139,8 +139,9 @@ func Execute() {
 	case "update":
 		processUpdate(arguments, config)
 	case "upgrade":
-		processUpdate(arguments, config)
-		processInstall(arguments, config)
+		if processUpdate(arguments, config) {
+			processInstall(arguments, config)
+		}
 	case "path":
 		fmt.Println("path")
 	case "git":
