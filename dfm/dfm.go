@@ -143,7 +143,7 @@ func Execute() {
 			processInstall(arguments, config)
 		}
 	case "path":
-		fmt.Println("path")
+		fmt.Println(config.SrcDir)
 	case "git":
 		processGit(arguments, config)
 	default:
