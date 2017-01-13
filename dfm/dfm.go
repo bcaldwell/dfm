@@ -17,6 +17,9 @@ var verbose *bool
 var force *bool
 var overwrite *bool
 
+var Version string
+var BuildDate string
+
 // Execute kicks of dfm command
 func Execute() {
 	var config *Configuration
@@ -146,6 +149,8 @@ func Execute() {
 		fmt.Println(config.SrcDir)
 	case "git":
 		processGit(arguments, config)
+	case "version":
+		fmt.Println(Version)
 	default:
 		printer.Error("Unknown subcommand %s", commandName)
 	}
