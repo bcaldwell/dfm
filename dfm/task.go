@@ -21,7 +21,7 @@ type Task struct {
 	Links []string
 	Env   []string
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on
-	importance byte
+	Importance byte
 }
 
 // look at multiple
@@ -96,7 +96,7 @@ func (t Task) execute(config *Configuration) error {
 	}
 
 	for _, command := range t.Cmd {
-		err := processCmd(command)
+		err := processCmd(command, config)
 		if err != nil {
 			printer.Error("%s", err)
 		}

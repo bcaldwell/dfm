@@ -17,6 +17,7 @@ var verbose *bool
 var force *bool
 var overwrite *bool
 
+// Execute kicks of dfm command
 func Execute() {
 	var config *Configuration
 
@@ -26,7 +27,6 @@ func Execute() {
 	overwrite = flag.Bool("overwrite", false, "overwrite existing files or folders when linking")
 	configFile := flag.String("config", "", "Sets location of dfm config file or url with config file. Defaults to ~/.dfm.yml.")
 	configURL := ""
-	// *configFile = "dfm.example.yml"
 
 	flag.Parse()
 
@@ -57,8 +57,8 @@ func Execute() {
 			fatalErrorCheck(err, "Couldn't read .dfmrc file")
 			*configFile = string(dat)
 		} else {
-			printer.VerboseWarning("config file not specified. Defaulting to ~/dfm.yml")
-			*configFile = "~/dfm.yml"
+			*configFile = detectConfigFileLocation(*configFile)
+			printer.VerboseWarning("config file not specified. Defaulting to %s", *configFile)
 		}
 	} else {
 		if _, err := os.Stat(*configFile); os.IsNotExist(err) {
@@ -80,6 +80,9 @@ func Execute() {
 		if _, err := os.Stat(rcFile); os.IsNotExist(err) {
 			defer func() {
 				if configURL != "" {
+					if config.SrcDir != ".dotfiles" {
+						return
+					}
 					configPrediction := path.Join(config.SrcDir, "dfm.yml")
 					if _, err := os.Stat(configPrediction); err == nil {
 						*configFile = configPrediction
@@ -88,7 +91,7 @@ func Execute() {
 				fmt.Println()
 				if AskForConfirmation("set default configuration to " + *configFile + "?") {
 					err := ioutil.WriteFile(rcFile, []byte(*configFile), 0644)
-					errorCheck(err, "writing dfmrc file")
+					errorCheck(err, "writing ~/.dfmrc file")
 				}
 			}()
 		}
@@ -107,6 +110,16 @@ func Execute() {
 		config.DestDir = homeDir
 		printer.VerboseWarning("destDir not specified. Defaulting to %s", config.DestDir)
 	}
+
+	if _, err := os.Stat(config.SrcDir); os.IsNotExist(err) {
+		printer.VerboseInfoBar("cloning %s to %s", config.Repo, config.SrcDir)
+		output, err := shell.Command("git", "clone", config.Repo, config.SrcDir).Output()
+		if err != nil {
+			printer.InfoBar(string(output))
+			printer.Fail("Failed to clone repo %s with %s", config.Repo, err)
+		}
+	}
+	// preclone commands?? (ssh keys)
 
 	args := flag.Args()
 
@@ -135,4 +148,20 @@ func Execute() {
 	default:
 		printer.Error("Unknown subcommand %s", commandName)
 	}
+}
+
+func detectConfigFileLocation(configFile string) string {
+	if configFile != "" {
+		return configFile
+	}
+	defaultConfigFiles := []string{"dfm.yml", "$HOME/.dotfiles/dfm.yml", "$HOME/dfm.yml", "$HOME/.dfm.yml"}
+	for _, file := range defaultConfigFiles {
+		file = os.ExpandEnv(file)
+		if _, err := os.Stat(file); err == nil {
+			return file
+		}
+	}
+	printer.Error("could not find a configuration file")
+	os.Exit(1)
+	return ""
 }
