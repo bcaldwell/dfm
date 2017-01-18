@@ -87,34 +87,37 @@ tasks:
 ### Commands
 ##### install
 Process each tasks and excuses it
+
 ```
 dfm install
 ```
 
 ##### update
 To use git to update the repository by running `git fetch && git pull` run:
+
 ```
 dfm update
 ```
 
 ##### upgrade
 Same as `dfm update` but runs `dfm install` afterwards:
+
 ```
 dfm upgrade
 ```
 
 ##### git
 Runs the passed in git command in the source respository:
+
 ```
 dfm git args
 ```
-Ex:
-```
-dfm git status
-```
+
+Ex: `dfm git status`
 
 ##### path
 Returns the path of the source respository. Useful for `cd`
+
 ```
 cd $(dfm cd)
 ```
@@ -122,30 +125,35 @@ cd $(dfm cd)
 ### Flags
 ##### config
 Sets the location of the configuration file
+
 ```
 dfm -config pathtoconfig/config.yml
 ``` 
 
 ##### verbose
 Enables verbose logging
+
 ```
 dfm -verbose install
 ```
 
 ##### dryrun
 Prints shell commands that would be excused without excusing them
+
 ```
 dfm -dryrun install
 ```
 
 ##### overwrite
 Overwrite previously existing files, folders or symlinks when linking files
+
 ```
 dfm -overwrite install
 ```
 
 ##### force
 Forces commands to run with more power. Also overwrites previously existing files, folders or symlinks when linking files
+
 ```
 dfm -force install
 ```
@@ -153,8 +161,8 @@ dfm -force install
 
 ### Enable cd command
 To enable the `dfm cd` command, add the following to your profile (~/.bash_profile, ~/.zshrc, ~/.profile, or ~/.bashrc).
-```
 
+```
 function dfm () {
   if [ "$1" == "cd" ]
   then
@@ -163,5 +171,4 @@ function dfm () {
   fi
   command dfm "$@"
 }
-
 ```
