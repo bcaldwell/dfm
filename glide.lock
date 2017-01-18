@@ -1,5 +1,5 @@
-hash: dd12c524d2353ba3e66f45ac5b518ad7b59979c7c53dcef06cc4163db1459792
-updated: 2017-01-08T09:26:38.012761593-05:00
+hash: a2d89c6bf152125b5ea5945073ce25d6a3fa21e51c910f65cba38cfcbf01968e
+updated: 2017-01-16T22:12:11.291762999-05:00
 imports:
 - name: github.com/benjamincaldwell/devctl
   version: 3474fbd46492dc35727fed4e955175b2843353a6
@@ -7,6 +7,8 @@ imports:
   subpackages:
   - printer
   - shell
+- name: github.com/urfave/cli
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports: []

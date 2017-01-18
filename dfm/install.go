@@ -1,22 +1,17 @@
 package dfm
 
-import (
-	"strings"
+import "github.com/benjamincaldwell/dfm/tasks"
 
-	"github.com/benjamincaldwell/devctl/printer"
-)
-
-func processInstall(args []string, config *Configuration) {
+func installAction(args []string, config *Configuration) {
 	parameter := ""
 	if len(args) > 0 {
 		parameter = args[0]
 	}
-	taskList := getTaskList(parameter, config)
-	taskList = uniqueSliceTransform((taskList))
-	printer.VerboseInfoBar("Running tasks: %s", strings.Join(taskList, ","))
-
-	for _, task := range taskList {
-		printer.Info("Executing %s\n", task)
-		config.Tasks[task].execute(config)
-	}
+	tasks.SrcDir = config.SrcDir
+	tasks.DestDir = config.DestDir
+	tasks.DryRun = dryRun
+	tasks.Force = force
+	tasks.Overwrite = overwrite
+	tasks.Verbose = verbose
+	tasks.ExecuteTasks(config.Tasks, parameter)
 }

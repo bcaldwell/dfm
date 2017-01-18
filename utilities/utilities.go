@@ -1,4 +1,4 @@
-package dfm
+package utilities
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"github.com/benjamincaldwell/devctl/printer"
 )
 
-func stringInSlice(a string, list []string) bool {
+func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
 			return true
@@ -21,16 +21,16 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func uniqueSliceTransform(a []string) (output []string) {
+func UniqueSliceTransform(a []string) (output []string) {
 
 	for _, s := range a {
-		output = appendIfUnique(output, s)
+		output = AppendIfUnique(output, s)
 	}
 
 	return output
 }
 
-func appendIfUnique(slice []string, i string) []string {
+func AppendIfUnique(slice []string, i string) []string {
 	for _, ele := range slice {
 		if ele == i {
 			return slice
@@ -39,14 +39,14 @@ func appendIfUnique(slice []string, i string) []string {
 	return append(slice, i)
 }
 
-func fatalErrorCheck(e error, s string) {
+func FatalErrorCheck(e error, s string) {
 	if e != nil {
 		printer.Error("%s: %s", s, e)
 		os.Exit(1)
 	}
 }
 
-func errorCheck(err error, message string) bool {
+func ErrorCheck(err error, message string) bool {
 	if err != nil {
 		printer.Fail("%s failed with %s", message, err)
 		return true
@@ -81,18 +81,18 @@ func AskForConfirmation(s string) bool {
 
 func HTTPDownload(uri string) ([]byte, error) {
 	res, err := http.Get(uri)
-	errorCheck(err, "downloading "+uri)
+	ErrorCheck(err, "downloading "+uri)
 
 	defer res.Body.Close()
 	d, err := ioutil.ReadAll(res.Body)
-	errorCheck(err, "reading "+uri)
+	ErrorCheck(err, "reading "+uri)
 
 	return d, err
 }
 
 func WriteFile(dst string, d []byte) error {
 	err := ioutil.WriteFile(dst, d, 0444)
-	errorCheck(err, "writing "+dst)
+	ErrorCheck(err, "writing "+dst)
 
 	return err
 }

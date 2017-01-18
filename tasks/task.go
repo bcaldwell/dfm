@@ -1,4 +1,4 @@
-package dfm
+package tasks
 
 import (
 	"runtime"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/benjamincaldwell/devctl/printer"
 	"github.com/benjamincaldwell/devctl/shell"
+	"github.com/benjamincaldwell/dfm/utilities"
 )
 
 type Task struct {
@@ -24,6 +25,28 @@ type Task struct {
 	Importance byte
 }
 
+var SrcDir string
+var DestDir string
+var Verbose bool
+var DryRun bool
+var Force bool
+var Overwrite bool
+
+func ExecuteTasks(tasks map[string]Task, task string) error {
+	taskList := getTaskList(task, tasks)
+	taskList = utilities.UniqueSliceTransform((taskList))
+	printer.VerboseInfoBar("Running tasks: %s", strings.Join(taskList, ","))
+
+	printer.Verbose = Verbose
+	shell.DryRun = DryRun
+
+	for _, task := range taskList {
+		printer.Info("Executing %s\n", task)
+		tasks[task].Execute()
+	}
+	return nil
+}
+
 // look at multiple
 func (t Task) calculateImportance(parameter string) byte {
 	if strings.ToLower(runtime.GOOS) == strings.ToLower(t.When.OS) {
@@ -35,51 +58,51 @@ func (t Task) calculateImportance(parameter string) byte {
 		if err := shell.Command("sh", "-c", t.When.Condition).Run(); err == nil {
 			return 2
 		}
-		shell.DryRun = *dryRun
+		shell.DryRun = DryRun
 	} else if t.When.NotInstalled != "" {
 		shell.DryRun = false
 		if err := shell.Command("sh", "-c", "command -v "+t.When.NotInstalled).Run(); err != nil {
 			return 2
 		}
-		shell.DryRun = *dryRun
+		shell.DryRun = DryRun
 	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" && t.When.NotInstalled == "" {
 		return 1
 	}
 	return 0
 }
 
-func getTaskList(parameter string, config *Configuration) (tasks []string) {
+func getTaskList(parameter string, tasks map[string]Task) (tasksList []string) {
 	if parameter != "" {
-		if task, ok := config.Tasks[parameter]; ok {
-			tasks = append(tasks, task.appendTaskDependencyList(tasks, parameter, config)...)
-			tasks = append(tasks, parameter)
+		if task, ok := tasks[parameter]; ok {
+			tasksList = append(tasksList, task.appendTaskDependencyList(tasksList, parameter, tasks)...)
+			tasksList = append(tasksList, parameter)
 		}
 	} else {
-		for i, task := range config.Tasks {
+		for i, task := range tasks {
 			if task.calculateImportance(parameter) == 2 {
-				tasks = append(tasks, task.appendTaskDependencyList(tasks, parameter, config)...)
-				tasks = append(tasks, i)
+				tasksList = append(tasksList, task.appendTaskDependencyList(tasksList, parameter, tasks)...)
+				tasksList = append(tasksList, i)
 			}
 		}
 	}
-	if len(tasks) == 0 {
+	if len(tasksList) == 0 {
 		printer.Error("no tasks to run")
 	}
 
 	// taskNames := reflect.ValueOf(config.Tasks).MapKeys()
-	return tasks
+	return tasksList
 }
 
 // check for circular
-func (t Task) appendTaskDependencyList(dependencies []string, parameter string, config *Configuration) []string {
+func (t Task) appendTaskDependencyList(dependencies []string, parameter string, tasks map[string]Task) []string {
 	if len(t.Deps) == 0 {
 		return []string{}
 	}
 	for _, depString := range t.Deps {
-		if dep, ok := config.Tasks[depString]; ok {
-			// fmt.Printf("%s %+v %b\n", depString, dependencies, stringInSlice(depString, dependencies))
-			if dep.calculateImportance(parameter) > 0 && !stringInSlice(depString, dependencies) {
-				dependencies = append(dependencies, dep.appendTaskDependencyList(dependencies, parameter, config)...)
+		if dep, ok := tasks[depString]; ok {
+			// fmt.Printf("%s %+v %t\n", depString, dependencies, utilities.StringInSlice(depString, dependencies))
+			if dep.calculateImportance(parameter) > 0 && !utilities.StringInSlice(depString, dependencies) {
+				dependencies = append(dependencies, dep.appendTaskDependencyList(dependencies, parameter, tasks)...)
 				dependencies = append(dependencies, depString)
 			}
 		} else {
@@ -89,14 +112,14 @@ func (t Task) appendTaskDependencyList(dependencies []string, parameter string, 
 	return dependencies
 }
 
-func (t Task) execute(config *Configuration) error {
+func (t Task) Execute() error {
 
 	if len(t.Links) > 0 {
 		printer.Info("Running commands")
 	}
 
 	for _, command := range t.Cmd {
-		err := processCmd(command, config)
+		err := processCmd(command)
 		if err != nil {
 			printer.Error("%s", err)
 		}
@@ -107,7 +130,7 @@ func (t Task) execute(config *Configuration) error {
 	}
 
 	for _, link := range t.Links {
-		err := processLink(link, config)
+		err := processLink(link)
 		if err != nil {
 			printer.Error("%s", err)
 		}

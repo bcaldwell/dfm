@@ -1,4 +1,4 @@
-package dfm
+package tasks
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/benjamincaldwell/devctl/printer"
 )
 
-func parseLink(params string, config *Configuration) (src string, dest string, mode os.FileMode, err error) {
+func parseLink(params string) (src string, dest string, mode os.FileMode, err error) {
 	paramParts := strings.Split(params, ":")
 	if len(paramParts) > 3 {
 		printer.Info("droping last part of link param %s from %s", strings.Join(paramParts[3:], ":"), params)
@@ -32,28 +32,28 @@ func parseLink(params string, config *Configuration) (src string, dest string, m
 	if len(paramParts) == 2 {
 		dest = os.ExpandEnv(paramParts[1])
 	} else {
-		dest = path.Join(config.DestDir, path.Base(src))
+		dest = path.Join(DestDir, path.Base(src))
 	}
 	return
 }
 
-func processLink(params string, config *Configuration) error {
-	src, dest, mode, err := parseLink(params, config)
+func processLink(params string) error {
+	src, dest, mode, err := parseLink(params)
 	if err == nil {
-		return createLink(src, dest, mode, config)
+		return createLink(src, dest, mode)
 	}
 	return err
 }
 
-func createLink(src string, dest string, mode os.FileMode, config *Configuration) error {
+func createLink(src string, dest string, mode os.FileMode) error {
 	srcAbs := src
 	if !path.IsAbs(srcAbs) {
-		srcAbs = path.Join(config.SrcDir, src)
+		srcAbs = path.Join(SrcDir, src)
 	}
 
 	destAbs := dest
 	if !path.IsAbs(destAbs) {
-		destAbs = path.Join(config.DestDir, dest)
+		destAbs = path.Join(DestDir, dest)
 	}
 
 	if _, err := os.Stat(srcAbs); os.IsNotExist(err) {
@@ -61,8 +61,8 @@ func createLink(src string, dest string, mode os.FileMode, config *Configuration
 	}
 
 	if _, err := os.Stat(destAbs); err == nil {
-		if *force || *overwrite {
-			if *dryRun || *verbose {
+		if Force || Overwrite {
+			if DryRun || Verbose {
 				printer.WarningBar("removing %s", destAbs)
 
 			} else {
@@ -75,9 +75,9 @@ func createLink(src string, dest string, mode os.FileMode, config *Configuration
 		}
 	}
 
-	if *dryRun || *verbose {
+	if DryRun || Verbose {
 		printer.InfoBar("Linking %s to %s", srcAbs, destAbs)
-		if *dryRun {
+		if DryRun {
 			return nil
 		}
 	}

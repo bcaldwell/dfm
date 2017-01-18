@@ -1,8 +1,11 @@
 package dfm
 
-import "github.com/benjamincaldwell/devctl/shell"
+import (
+	"github.com/benjamincaldwell/devctl/shell"
+	"github.com/benjamincaldwell/dfm/utilities"
+)
 
-func processGit(args []string, config *Configuration) {
+func gitAction(args []string, config *Configuration) {
 	err := shell.Command("git", args...).SetDir(config.SrcDir).PrintOutput()
-	errorCheck(err, "")
+	utilities.ErrorCheck(err, "")
 }
