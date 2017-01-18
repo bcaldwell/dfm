@@ -154,6 +154,7 @@ dfm -force install
 ### Enable cd command
 To enable the `dfm cd` command, add the following to your profile (~/.bash_profile, ~/.zshrc, ~/.profile, or ~/.bashrc).
 ```
+
 function dfm () {
   if [ "$1" == "cd" ]
   then
@@ -162,4 +163,5 @@ function dfm () {
   fi
   command dfm "$@"
 }
+
 ```
