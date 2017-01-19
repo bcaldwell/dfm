@@ -1,10 +1,9 @@
 package: github.com/benjamincaldwell/dfm
 import:
-- package: github.com/benjamincaldwell/devctl
-  repo: git@github.com:benjamincaldwell/devctl.git
-  subpackages:
-  - printer
-  - shell
 - package: gopkg.in/yaml.v2
 - package: github.com/urfave/cli
   version: ~1.19.1
+- package: github.com/Masterminds/sprig
+  version: ^2.8.0
+- package: github.com/benjamincaldwell/go-printer
+- package: github.com/benjamincaldwell/go-sh

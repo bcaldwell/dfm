@@ -1,8 +1,8 @@
 package tasks
 
 import (
-	"github.com/benjamincaldwell/devctl/printer"
-	"github.com/benjamincaldwell/devctl/shell"
+	"github.com/benjamincaldwell/go-printer"
+	"github.com/benjamincaldwell/go-sh"
 )
 
 func processCmd(cmd string) error {
@@ -10,7 +10,7 @@ func processCmd(cmd string) error {
 		printer.InfoBar(cmd)
 		return nil
 	}
-	command := shell.Command("sh", "-c", cmd).SetDir(SrcDir)
+	command := sh.Command("sh", "-c", cmd).SetDir(SrcDir)
 	if Verbose {
 		return command.PrintOutput()
 	}

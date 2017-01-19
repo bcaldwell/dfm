@@ -7,9 +7,9 @@ import (
 	"path"
 	"regexp"
 
-	"github.com/benjamincaldwell/devctl/printer"
-	"github.com/benjamincaldwell/devctl/shell"
 	"github.com/benjamincaldwell/dfm/utilities"
+	"github.com/benjamincaldwell/go-printer"
+	"github.com/benjamincaldwell/go-sh"
 	"github.com/urfave/cli"
 )
 
@@ -29,7 +29,7 @@ func Execute() {
 	var configFile string
 
 	app := cli.NewApp()
-	app.Name = "devctl"
+	app.Name = "dfm"
 	app.Usage = "an easy way to manage dotfiles"
 
 	app.Flags = []cli.Flag{
@@ -59,7 +59,7 @@ func Execute() {
 	}
 
 	printer.Verbose = verbose
-	shell.DryRun = dryRun
+	sh.DryRun = dryRun
 
 	printFlagOptions()
 	homeDir := detectHomeDir()
@@ -220,7 +220,7 @@ func determineRcFile(homeDir string) string {
 
 func cloneRepo(repo, srcDir string) error {
 	printer.VerboseInfoBar("cloning %s to %s", repo, srcDir)
-	output, err := shell.Command("git", "clone", repo, srcDir).Output()
+	output, err := sh.Command("git", "clone", repo, srcDir).Output()
 	if err != nil {
 		printer.InfoBar(string(output))
 		printer.Fail("Failed to clone repo %s with %s", repo, err)

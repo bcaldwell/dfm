@@ -1,12 +1,16 @@
-hash: a2d89c6bf152125b5ea5945073ce25d6a3fa21e51c910f65cba38cfcbf01968e
-updated: 2017-01-16T22:12:11.291762999-05:00
+hash: 92c13f36388edb4496bfb029752f8481fcb861c334dbb89ea4ecdd0785392b59
+updated: 2017-01-19T14:48:37.095888564-05:00
 imports:
-- name: github.com/benjamincaldwell/devctl
-  version: 3474fbd46492dc35727fed4e955175b2843353a6
-  repo: git@github.com:benjamincaldwell/devctl.git
-  subpackages:
-  - printer
-  - shell
+- name: github.com/aokoli/goutils
+  version: 45307ec16e3cd47cd841506c081f7afd8237d210
+- name: github.com/benjamincaldwell/go-printer
+  version: 02c5cdb1f2fe20c640b0b0a023debdc6a03fab26
+- name: github.com/benjamincaldwell/go-sh
+  version: c2e13f9bd2ff73f433d58baae6da189a17b2b040
+- name: github.com/Masterminds/sprig
+  version: 69011c0cd9b4d2e0733c4d9e2c8e2a5a0d0a2f2f
+- name: github.com/satori/go.uuid
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: gopkg.in/yaml.v2

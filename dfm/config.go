@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"path"
 
-	"github.com/benjamincaldwell/devctl/printer"
 	"github.com/benjamincaldwell/dfm/tasks"
+	"github.com/benjamincaldwell/go-printer"
 
 	yaml "gopkg.in/yaml.v2"
 )

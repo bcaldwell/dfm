@@ -5,9 +5,9 @@ import (
 
 	"strings"
 
-	"github.com/benjamincaldwell/devctl/printer"
-	"github.com/benjamincaldwell/devctl/shell"
 	"github.com/benjamincaldwell/dfm/utilities"
+	"github.com/benjamincaldwell/go-printer"
+	"github.com/benjamincaldwell/go-sh"
 )
 
 type Task struct {
@@ -38,7 +38,7 @@ func ExecuteTasks(tasks map[string]Task, task string) error {
 	printer.VerboseInfoBar("Running tasks: %s", strings.Join(taskList, ","))
 
 	printer.Verbose = Verbose
-	shell.DryRun = DryRun
+	sh.DryRun = DryRun
 
 	for _, task := range taskList {
 		printer.Info("Executing %s\n", task)
@@ -54,17 +54,17 @@ func (t Task) calculateImportance(parameter string) byte {
 	} else if parameter != "" && strings.ToLower(parameter) == strings.ToLower(t.When.Parameter) {
 		return 2
 	} else if t.When.Condition != "" {
-		shell.DryRun = false
-		if err := shell.Command("sh", "-c", t.When.Condition).Run(); err == nil {
+		sh.DryRun = false
+		if err := sh.Command("sh", "-c", t.When.Condition).Run(); err == nil {
 			return 2
 		}
-		shell.DryRun = DryRun
+		sh.DryRun = DryRun
 	} else if t.When.NotInstalled != "" {
-		shell.DryRun = false
-		if err := shell.Command("sh", "-c", "command -v "+t.When.NotInstalled).Run(); err != nil {
+		sh.DryRun = false
+		if err := sh.Command("sh", "-c", "command -v "+t.When.NotInstalled).Run(); err != nil {
 			return 2
 		}
-		shell.DryRun = DryRun
+		sh.DryRun = DryRun
 	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" && t.When.NotInstalled == "" {
 		return 1
 	}

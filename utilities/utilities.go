@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/benjamincaldwell/devctl/printer"
+	"github.com/benjamincaldwell/go-printer"
 )
 
 func StringInSlice(a string, list []string) bool {
