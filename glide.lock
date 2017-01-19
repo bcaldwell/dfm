@@ -1,12 +1,12 @@
-hash: 92c13f36388edb4496bfb029752f8481fcb861c334dbb89ea4ecdd0785392b59
-updated: 2017-01-19T14:48:37.095888564-05:00
+hash: 9554f51f6307e63a384a09b753051b3d44d9deda38378ad6e89a58bc96dbf13a
+updated: 2017-01-19T15:00:19.885989532-05:00
 imports:
 - name: github.com/aokoli/goutils
-  version: 45307ec16e3cd47cd841506c081f7afd8237d210
+  version: 9c37978a95bd5c709a15883b6242714ea6709e64
 - name: github.com/benjamincaldwell/go-printer
   version: 02c5cdb1f2fe20c640b0b0a023debdc6a03fab26
 - name: github.com/benjamincaldwell/go-sh
-  version: c2e13f9bd2ff73f433d58baae6da189a17b2b040
+  version: cc9f47848c5627c2e3e6f37f75a9b75a793217a2
 - name: github.com/Masterminds/sprig
   version: 69011c0cd9b4d2e0733c4d9e2c8e2a5a0d0a2f2f
 - name: github.com/satori/go.uuid
@@ -14,5 +14,5 @@ imports:
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: gopkg.in/yaml.v2
-  version: a83829b6f1293c91addabc89d0571c246397bbf4
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []
