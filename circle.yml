@@ -21,8 +21,6 @@ test:
     - cd "$APP_PATH" && glide install
   override:
     - cd "$APP_PATH" && go test -cover $(glide nv)
- 
-test:
   post:
     - bash <(curl -s https://codecov.io/bash)
 
