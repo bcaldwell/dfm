@@ -21,7 +21,7 @@ test:
     - cd "$APP_PATH" && glide install
   override:
     - cd "$APP_PATH" && go test -race -coverprofile=profile.out -covermode=atomic $(glide nv)
-    - [ -f profile.out ] && cat profile.out >> coverage.txt && rm profile.out
+    - "[ -f profile.out ] && cat profile.out >> coverage.txt && rm profile.out"
   post:
     - bash <(curl -s https://codecov.io/bash)
 
