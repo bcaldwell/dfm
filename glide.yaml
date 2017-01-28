@@ -7,3 +7,5 @@ import:
   version: ^2.8.0
 - package: github.com/benjamincaldwell/go-printer
 - package: github.com/benjamincaldwell/go-sh
+- package: github.com/smartystreets/goconvey
+  version: ^1.6.2

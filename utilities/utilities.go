@@ -39,9 +39,8 @@ func AppendIfUnique(slice []string, i string) []string {
 	return append(slice, i)
 }
 
-func FatalErrorCheck(e error, s string) {
-	if e != nil {
-		printer.Error("%s: %s", s, e)
+func FatalErrorCheck(err error, message string) {
+	if ErrorCheck(err, message) {
 		os.Exit(1)
 	}
 }

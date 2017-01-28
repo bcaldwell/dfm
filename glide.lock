@@ -1,5 +1,5 @@
-hash: 9554f51f6307e63a384a09b753051b3d44d9deda38378ad6e89a58bc96dbf13a
-updated: 2017-01-19T15:00:19.885989532-05:00
+hash: 111dd14cb3bea41e6653619a480cd54aa5017230ddb26065ae732d137c6271f7
+updated: 2017-01-27T18:36:34.03275884-05:00
 imports:
 - name: github.com/aokoli/goutils
   version: 9c37978a95bd5c709a15883b6242714ea6709e64
@@ -11,8 +11,25 @@ imports:
   version: 69011c0cd9b4d2e0733c4d9e2c8e2a5a0d0a2f2f
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: github.com/smartystreets/goconvey
+  version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: gopkg.in/yaml.v2
-  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
-testImports: []
+  version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
+testImports:
+- name: github.com/gopherjs/gopherjs
+  version: 2967252ace8b112e63a5b5879e92de915fe731f4
+  subpackages:
+  - js
+- name: github.com/jtolds/gls
+  version: bb0351aa7eb6f322f32667d51375f26a2bca6628
+- name: github.com/smartystreets/assertions
+  version: 26acb9229f421449ac63d014995b282d59261a8b
+  subpackages:
+  - internal/go-render/render
+  - internal/oglematchers

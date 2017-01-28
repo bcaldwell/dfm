@@ -13,6 +13,20 @@ tasks:
     #   - "@clone github.com/benjamincaldwell/devctl"
     links:
       - devctlconfig:.devctlconfig
+    # acts as a dep
+    git:
+      repo: something
+      dest: somewhere
+      branch: dev
+      ref: git ref
+    install-deps:
+      install:
+        - git
+      brew:
+        install:
+          - zsh
+
+
   zsh:
     cmd:
       - "@clone github.com/benjamincaldwell/devctl"

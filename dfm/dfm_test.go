@@ -1,6 +1,11 @@
 package dfm
 
-import "testing"
+import (
+	"os"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+)
 
 func TestExecute(t *testing.T) {
 	tests := []struct {
@@ -16,19 +21,12 @@ func TestExecute(t *testing.T) {
 }
 
 func Test_detectHomeDir(t *testing.T) {
-	tests := []struct {
-		name        string
-		wantHomeDir string
-	}{
-	// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotHomeDir := detectHomeDir(); gotHomeDir != tt.wantHomeDir {
-				t.Errorf("detectHomeDir() = %v, want %v", gotHomeDir, tt.wantHomeDir)
-			}
-		})
-	}
+	Convey("Should return value of HOME if it exists", t, func() {
+		os.Setenv("HOME", "testing_dir")
+		So(detectHomeDir(), ShouldEqual, "testing_dir")
+		// os.Setenv("HOME", "")
+		// So(detectHomeDir(), ShouldEqual, "testing_dir")
+	})
 }
 
 func Test_printFlagOptions(t *testing.T) {
