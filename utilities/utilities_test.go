@@ -105,6 +105,9 @@ func TestFatalErrorCheck(t *testing.T) {
 		err := cmd.Run()
 		_, ok := err.(*exec.ExitError)
 		So(ok, ShouldEqual, false)
+
+		// second test: shouldn't exit
+		FatalErrorCheck(nil, "testing error")
 	})
 
 	Convey("Should crash if error is not nil", t, func() {

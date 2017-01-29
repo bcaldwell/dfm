@@ -1,6 +1,7 @@
 package dfm
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -10,16 +11,27 @@ import (
 	"github.com/benjamincaldwell/dfm/utilities"
 	"github.com/benjamincaldwell/go-printer"
 	"github.com/benjamincaldwell/go-sh"
+	"github.com/spf13/afero"
 	"github.com/urfave/cli"
 )
 
-var dryRun bool
-var verbose bool
-var force bool
-var overwrite bool
+var (
+	dryRun    bool
+	verbose   bool
+	force     bool
+	overwrite bool
 
-var Version string
-var BuildDate string
+	// Version represents the current version of the dfm cli --> Set by build flags
+	Version string
+	// BuildDate is the date the current version was built --> Set by build flags
+	BuildDate string
+
+	// ErrNoHomeEnv is the error that is returned when HOME environment variable is not set
+	ErrNoHomeEnv    = errors.New("HOME environment variable not set")
+	ErrNoConfigFile = errors.New("Could not find a configuration file")
+
+	fs = afero.NewOsFs()
+)
 
 // set bootstrap env on clone???
 
@@ -62,16 +74,18 @@ func Execute() {
 	sh.DryRun = dryRun
 
 	printFlagOptions()
-	homeDir := detectHomeDir()
+	homeDir, err := detectHomeDir()
+	utilities.FatalErrorCheck(err, "determining user's homeDir")
 
-	configFile = detectConfigFile(configFile, homeDir)
+	configFile, err = detectConfigFile(configFile, homeDir)
+	utilities.FatalErrorCheck(err, "determining configuration file")
 
 	config, err := parseConfig(configFile)
 	utilities.FatalErrorCheck(err, "Unable to parse configuration file: %s")
 
 	config.SetDefaults(homeDir)
 
-	if _, err := os.Stat(config.SrcDir); os.IsNotExist(err) {
+	if _, err := fs.Stat(config.SrcDir); os.IsNotExist(err) {
 		err = cloneRepo(config.Repo, config.SrcDir)
 		utilities.FatalErrorCheck(err, "Unable to clone desired repo")
 	}
@@ -137,11 +151,10 @@ func Execute() {
 	createDfmrc(homeDir, configFile, config.SrcDir)
 }
 
-func detectHomeDir() (homeDir string) {
+func detectHomeDir() (homeDir string, err error) {
 	homeDir = os.Getenv("HOME")
 	if homeDir == "" {
-		printer.Fail("unable to determine user's homeDir")
-		os.Exit(1)
+		err = ErrNoHomeEnv
 	}
 	return
 }
@@ -159,28 +172,29 @@ func printFlagOptions() {
 	}
 }
 
-func detectConfigFile(configFileFlag, homeDir string) (configFile string) {
+func detectConfigFile(configFileFlag, homeDir string) (configFile string, err error) {
 	var configURL string
 	rcFile := determineRcFile(homeDir)
 
 	if configFileFlag == "" {
-		if _, err := os.Stat(rcFile); err == nil {
+		if _, err := fs.Stat(rcFile); err == nil {
 			dat, err := ioutil.ReadFile(rcFile)
 			utilities.FatalErrorCheck(err, "Couldn't read .dfmrc file")
 			configFile = string(dat)
 		} else {
-			configFile = detectDefaultConfigFileLocation()
+			configFile, err = detectDefaultConfigFileLocation()
 			printer.VerboseWarning("config file not specified. Defaulting to %s", configFile)
+			return "", err
 		}
 	} else {
-		if _, err := os.Stat(configFileFlag); os.IsNotExist(err) {
+		if _, err := fs.Stat(configFileFlag); os.IsNotExist(err) {
 			r, _ := regexp.Compile(`(?i)^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$`)
 			if r.MatchString(configFileFlag) {
 				configURL = configFileFlag
 				printer.VerboseInfoBar("Fetching config from %s", configURL)
-				file, err := ioutil.TempFile(os.TempDir(), "dfm-")
+				file, err := afero.TempFile(fs, "", "dfm-")
 				utilities.ErrorCheck(err, "creating temp file")
-				defer os.Remove(file.Name())
+				defer fs.Remove(file.Name())
 				configFile = file.Name()
 
 				err = utilities.DownloadToFile(configURL, configFile)
@@ -196,10 +210,13 @@ func detectConfigFile(configFileFlag, homeDir string) (configFile string) {
 func createDfmrc(homeDir, configFile, scrDir string) {
 	// offer to create dfmrc file at the end if it doesnt exist
 	rcFile := determineRcFile(homeDir)
-	if _, err := os.Stat(rcFile); os.IsNotExist(err) {
-		if path.Dir(scrDir) != os.TempDir() {
+	if _, err := fs.Stat(rcFile); os.IsNotExist(err) {
+		tempDir, err := afero.TempDir(fs, "", "")
+		// should never error because uses os.TempDir() in the background which doesnt return an error
+		utilities.ErrorCheck(err, "Could not determine temp directory")
+		if path.Dir(scrDir) != tempDir {
 			configPrediction := path.Join(scrDir, "dfm.yml")
-			if _, err := os.Stat(configPrediction); err == nil {
+			if _, err := fs.Stat(configPrediction); err == nil {
 				configFile = configPrediction
 			}
 		}
@@ -228,15 +245,13 @@ func cloneRepo(repo, srcDir string) error {
 	return err
 }
 
-func detectDefaultConfigFileLocation() string {
-	defaultConfigFiles := []string{"dfm.yml", "$HOME/.dotfiles/dfm.yml", "$HOME/dfm.yml", "$HOME/.dfm.yml"}
+func detectDefaultConfigFileLocation() (string, error) {
+	defaultConfigFiles := []string{"dfm.yml", "$HOME/.dotfiles/dfm.yml", "$HOME/dotfiles/dfm.yml", "$HOME/dfm.yml", "$HOME/.dfm.yml"}
 	for _, file := range defaultConfigFiles {
 		file = os.ExpandEnv(file)
-		if _, err := os.Stat(file); err == nil {
-			return file
+		if _, err := fs.Stat(file); err == nil {
+			return file, nil
 		}
 	}
-	printer.Error("could not find a configuration file")
-	os.Exit(1)
-	return ""
+	return "", ErrNoConfigFile
 }

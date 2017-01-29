@@ -1,5 +1,5 @@
-hash: 111dd14cb3bea41e6653619a480cd54aa5017230ddb26065ae732d137c6271f7
-updated: 2017-01-27T18:36:34.03275884-05:00
+hash: ff11494c7b80df04668da19f1d2fadb4ed3c4d5bb90ff7cf7b42b02683fc4dad
+updated: 2017-01-29T00:41:30.362337214-05:00
 imports:
 - name: github.com/aokoli/goutils
   version: 9c37978a95bd5c709a15883b6242714ea6709e64
@@ -17,13 +17,22 @@ imports:
   - convey
   - convey/gotest
   - convey/reporting
+- name: github.com/spf13/afero
+  version: 72b31426848c6ef12a7a8e216708cb0d1530f074
+  subpackages:
+  - mem
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: golang.org/x/text
+  version: ece019dcfd29abcf65d0d1dfe145e8faad097640
+  subpackages:
+  - transform
+  - unicode/norm
 - name: gopkg.in/yaml.v2
   version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
 testImports:
 - name: github.com/gopherjs/gopherjs
-  version: 2967252ace8b112e63a5b5879e92de915fe731f4
+  version: 5c8f21741620ef6a52e185bbc920499581901c9e
   subpackages:
   - js
 - name: github.com/jtolds/gls
