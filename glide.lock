@@ -1,12 +1,12 @@
 hash: 510c99ea59e2054667a8666a57ab1ebd40d4661b1b0550309e3820e521b0ecd2
-updated: 2017-01-30T17:30:37.554619497-05:00
+updated: 2017-01-30T18:07:53.758272182-05:00
 imports:
 - name: github.com/aokoli/goutils
   version: 9c37978a95bd5c709a15883b6242714ea6709e64
 - name: github.com/benjamincaldwell/go-printer
   version: 02c5cdb1f2fe20c640b0b0a023debdc6a03fab26
 - name: github.com/benjamincaldwell/go-sh
-  version: c3bd3327457fb24bdfff9de76c26c38a1baab66e
+  version: 67160723b5733b6fbc9ade3a75126bc558867666
   subpackages:
   - mock
 - name: github.com/Masterminds/sprig
