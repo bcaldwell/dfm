@@ -107,7 +107,8 @@ func Execute() {
 			ShortName: "u",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
-
+				err := updateAction(c.Args(), config)
+				utilities.ErrorCheck(err, "fetch updates")
 			},
 		},
 		{

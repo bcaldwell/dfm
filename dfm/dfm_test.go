@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/benjamincaldwell/go-sh/mock"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 )
@@ -63,6 +64,9 @@ func Test_determineRcFile(t *testing.T) {
 }
 
 func Test_cloneRepo(t *testing.T) {
+	shMock.UseDefault()
+	defer shMock.UseMock()
+
 	srcDir, err := filepath.Abs("./testing/src")
 	fs.MkdirAll(srcDir, 0755)
 	defer fs.RemoveAll("./testing")

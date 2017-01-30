@@ -5,19 +5,17 @@ import (
 	"github.com/benjamincaldwell/go-sh"
 )
 
-func updateAction(args []string, config *Configuration) bool {
+func updateAction(args []string, config *Configuration) (err error) {
 	output, err := sh.Command("git", "fetch").SetDir(config.SrcDir).Output()
 	if err != nil {
-		printer.Fail("%s failed with %s", "Failed to fetch updates", err)
-		printer.InfoBar(string(output))
-		return false
+		printer.VerboseInfoBar(string(output))
+		return
 	}
 	output, err = sh.Command("git", "pull").SetDir(config.SrcDir).Output()
 	if err != nil {
-		printer.Fail("%s failed with %s", "Failed to fetch updates", err)
-		printer.InfoBar(string(output))
-		return false
+		printer.VerboseInfoBar(string(output))
+		return
 	}
 	printer.Success("Pulled latest version from git")
-	return true
+	return
 }

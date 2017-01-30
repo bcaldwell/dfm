@@ -1,22 +1,18 @@
-hash: ff11494c7b80df04668da19f1d2fadb4ed3c4d5bb90ff7cf7b42b02683fc4dad
-updated: 2017-01-29T00:41:30.362337214-05:00
+hash: 510c99ea59e2054667a8666a57ab1ebd40d4661b1b0550309e3820e521b0ecd2
+updated: 2017-01-30T17:30:37.554619497-05:00
 imports:
 - name: github.com/aokoli/goutils
   version: 9c37978a95bd5c709a15883b6242714ea6709e64
 - name: github.com/benjamincaldwell/go-printer
   version: 02c5cdb1f2fe20c640b0b0a023debdc6a03fab26
 - name: github.com/benjamincaldwell/go-sh
-  version: cc9f47848c5627c2e3e6f37f75a9b75a793217a2
+  version: c3bd3327457fb24bdfff9de76c26c38a1baab66e
+  subpackages:
+  - mock
 - name: github.com/Masterminds/sprig
   version: 69011c0cd9b4d2e0733c4d9e2c8e2a5a0d0a2f2f
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
-- name: github.com/smartystreets/goconvey
-  version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
-  subpackages:
-  - convey
-  - convey/gotest
-  - convey/reporting
 - name: github.com/spf13/afero
   version: 72b31426848c6ef12a7a8e216708cb0d1530f074
   subpackages:
@@ -42,3 +38,9 @@ testImports:
   subpackages:
   - internal/go-render/render
   - internal/oglematchers
+- name: github.com/smartystreets/goconvey
+  version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
