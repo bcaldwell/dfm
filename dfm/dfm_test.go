@@ -12,6 +12,7 @@ import (
 )
 
 func TestExecute(t *testing.T) {
+
 }
 
 func Test_detectHomeDir(t *testing.T) {
@@ -68,12 +69,12 @@ func Test_cloneRepo(t *testing.T) {
 	defer shMock.UseMock()
 
 	srcDir, err := filepath.Abs("./testing/src")
-	fs.MkdirAll(srcDir, 0755)
-	defer fs.RemoveAll("./testing")
+	Fs.MkdirAll(srcDir, 0755)
+	defer Fs.RemoveAll("./testing")
 	Convey("Should clone given repo to given source directory", t, func() {
 		So(err, ShouldEqual, nil)
 		cloneRepo("git@github.com:benjamincaldwell/public-test.git", srcDir)
-		_, err := fs.Stat(path.Join(srcDir, "testing-file"))
+		_, err := Fs.Stat(path.Join(srcDir, "testing-file"))
 		So(err, ShouldEqual, nil)
 	})
 
@@ -130,12 +131,12 @@ func Test_detectDefaultConfigFileLocation(t *testing.T) {
 	}
 	for _, tt := range tests {
 		Convey(tt.name, t, func() {
-			fs = afero.NewMemMapFs()
+			Fs = afero.NewMemMapFs()
 			os.Setenv("HOME", "/src")
-			fs.MkdirAll("/src", 0755)
+			Fs.MkdirAll("/src", 0755)
 			for _, file := range tt.files {
 				file = os.ExpandEnv(file)
-				fs.Create(file)
+				Fs.Create(file)
 			}
 			file, err := detectDefaultConfigFileLocation()
 			So(file, ShouldEqual, tt.want)
