@@ -3,12 +3,18 @@ package templates
 import (
 	"bytes"
 	"html/template"
+	"path/filepath"
+	"runtime"
+
+	"io"
 
 	"github.com/Masterminds/sprig"
+	"github.com/benjamincaldwell/dfm/utilities"
 )
 
 // Tpl is the template struct the contains template options
 type Tpl struct {
+	Name           string
 	TemplateString string
 	Files          []string
 	Glob           string
@@ -35,6 +41,14 @@ func (tmpl *Tpl) SetOptions(options ...Option) (*Tpl, error) {
 		}
 	}
 	return tmpl, nil
+}
+
+// Name sets name parameter of the tmp struct. Name is the name of the template
+func Name(name string) Option {
+	return func(tmpl *Tpl) (err error) {
+		tmpl.Name = name
+		return nil
+	}
 }
 
 // TemplateString sets parameter of the tmp struct. TemplateString is the parsed as a string template
@@ -103,6 +117,9 @@ func AppendFuncMap(name string, value interface{}) Option {
 
 // DefaultVariables is an option function that sets the default values of Variables map
 func DefaultVariables(tmpl *Tpl) (err error) {
+	tmpl.Variables = map[string]string{
+		"os": runtime.GOOS,
+	}
 	return nil
 }
 
@@ -119,20 +136,43 @@ func DefaultFuncMap(tmpl *Tpl) (err error) {
 	return nil
 }
 
-// ExecuteTemplate loads the parses the passed in files as the template.
-// The template contents are writtent to wr. And error is returned if any occur
-// func ExecuteTemplate(wr io.Writer, files ...string) (err error) {
-// 	Tpl, err := template.New(path.Base(files[0])).Funcs(funcMap).ParseFiles(files...)
-// 	if utilities.ErrorCheck(err, "Load template "+files[0]) {
-// 		return err
-// 	}
-// 	TplVars := map[string]string{}
-// 	err = Tpl.Execute(wr, TplVars)
-// 	return err
-// }
+// Execute parses and Execute the template as configured by the options.
+// The output is written to the passed in writter
+func (tmpl *Tpl) Execute(wr io.Writer) (err error) {
+	name := tmpl.Name
+	if name == "" {
+		if tmpl.TemplateString != "" {
+			name = "template"
+		} else if len(tmpl.Files) > 0 {
+			name = filepath.Base(tmpl.Files[0])
+		} else if tmpl.Glob != "" {
+			if filenames, err := filepath.Glob(tmpl.Glob); err == nil && len(filenames) > 0 {
+				name = filepath.Base(filenames[0])
+			}
+		}
+	}
+
+	temp := template.New(name).Funcs(tmpl.FuncMap)
+	if tmpl.TemplateString != "" {
+		temp, err = temp.Parse(tmpl.TemplateString)
+	} else if len(tmpl.Files) > 0 {
+		temp, err = temp.ParseFiles(tmpl.Files...)
+	} else if tmpl.Glob != "" {
+		temp, err = temp.ParseGlob(tmpl.Glob)
+	}
+
+	if utilities.ErrorCheck(err, "Parse template") {
+		return err
+	}
+
+	err = temp.Funcs(tmpl.FuncMap).Execute(wr, tmpl.Variables)
+	return err
+}
 
 func loadAndExecuteTemplate(files ...string) string {
 	var doc bytes.Buffer
-	// ExecuteTemplate(&doc, files...)
+	if temp, err := New(Files(files)); err == nil {
+		temp.Execute(&doc)
+	}
 	return doc.String()
 }
