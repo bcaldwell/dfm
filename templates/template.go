@@ -91,10 +91,20 @@ func Variables(variable map[string]string) Option {
 	}
 }
 
-// AppendVariable appends the variable parameter of the tmp struct. Variables are passed into the template
-func AppendVariable(name, value string) Option {
+// AppendVariables appends the variable parameter of the tmp struct. Variables are passed into the template
+func AppendVariables(name, value string) Option {
 	return func(tmpl *Tpl) (err error) {
 		tmpl.Variables[name] = value
+		return nil
+	}
+}
+
+// MergeVariables merges the variable parameter of the tmp struct with the passed in map. Variables are passed into the template
+func MergeVariables(m map[string]string) Option {
+	return func(tmpl *Tpl) (err error) {
+		for k, v := range m {
+			tmpl.Variables[k] = v
+		}
 		return nil
 	}
 }

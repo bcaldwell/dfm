@@ -12,17 +12,18 @@ import (
 
 type Task struct {
 	When struct {
-		OS           string
-		Condition    string
-		Parameter    string
+		OS           string `yaml:"os"`
+		Condition    string `yaml:"condition"`
+		Parameter    string `yaml:"parameter"`
 		NotInstalled string `yaml:"notInstalled"`
 	}
-	Deps  []string
-	Cmd   []string
-	Links []string
-	Env   []string
+	Deps     []string
+	Cmd      []string
+	Links    []string
+	Env      []string
+	Template Template
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on
-	Importance byte
+	importance byte
 }
 
 var SrcDir string
@@ -42,7 +43,7 @@ func ExecuteTasks(tasks map[string]Task, task string) error {
 
 	for _, task := range taskList {
 		printer.Info("Executing %s\n", task)
-		tasks[task].Execute()
+		tasks[task].Execute(task)
 	}
 	return nil
 }
@@ -112,16 +113,23 @@ func (t Task) appendTaskDependencyList(dependencies []string, parameter string, 
 	return dependencies
 }
 
-func (t Task) Execute() error {
-
+func (t Task) Execute(name string) error {
 	if len(t.Links) > 0 {
-		printer.Info("Running commands")
+		printer.VerboseInfo("Running commands")
 	}
 
 	for _, command := range t.Cmd {
 		err := processCmd(command)
 		if err != nil {
-			printer.Error("%s", err)
+			printer.Error("%s: %s", name, err)
+		}
+	}
+
+	if t.Template.isDefined() {
+		printer.VerboseInfo("Processing template")
+		err := processTemplate(t.Template)
+		if err != nil {
+			printer.Error("%s: %s", name, err)
 		}
 	}
 
@@ -132,7 +140,7 @@ func (t Task) Execute() error {
 	for _, link := range t.Links {
 		err := processLink(link)
 		if err != nil {
-			printer.Error("%s", err)
+			printer.Error("%s: %s", name, err)
 		}
 	}
 

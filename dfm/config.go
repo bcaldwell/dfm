@@ -7,7 +7,7 @@ import (
 	"github.com/benjamincaldwell/dfm/tasks"
 	"github.com/benjamincaldwell/go-printer"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 )
 
 type Configuration struct {

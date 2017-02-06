@@ -58,7 +58,7 @@ func TestCreationAndSetOptions(t *testing.T) {
 			expected.FuncMap["extra"] = extraFunc
 			tmp.SetOptions(
 				AppendFiles("extra.go"),
-				AppendVariable("second", "false"),
+				AppendVariables("second", "false"),
 				AppendFuncMap("extra", extraFunc),
 			)
 			So(err, ShouldEqual, nil)

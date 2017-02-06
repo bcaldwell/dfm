@@ -235,3 +235,4 @@ paket-files/
 *.sln.iml
 
 .vscode/**/*
+debug
