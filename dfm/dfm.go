@@ -41,6 +41,12 @@ var (
 func Execute() {
 
 	var configFile string
+	var config *Configuration
+
+	cli.VersionFlag = cli.BoolFlag{
+		Name:  "version, V",
+		Usage: "print only the version",
+	}
 
 	app := cli.NewApp()
 	app.Name = "dfm"
@@ -48,7 +54,7 @@ func Execute() {
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name:        "verbose",
+			Name:        "verbose, v",
 			Usage:       "verbose output",
 			Destination: &verbose,
 		},
@@ -72,27 +78,6 @@ func Execute() {
 		},
 	}
 
-	printer.Verbose = verbose
-	sh.DryRun = dryRun
-	// sh.Verbose = verbose
-
-	printFlagOptions()
-	homeDir, err := detectHomeDir()
-	utilities.FatalErrorCheck(err, "determining user's homeDir")
-
-	configFile, err = detectConfigFile(configFile, homeDir)
-	utilities.FatalErrorCheck(err, "determining configuration file")
-
-	config, err := parseConfig(configFile)
-	utilities.FatalErrorCheck(err, "Unable to parse configuration file: %s")
-
-	config.SetDefaults(homeDir)
-
-	if _, err := Fs.Stat(config.SrcDir); os.IsNotExist(err) {
-		err = cloneRepo(config.Repo, config.SrcDir)
-		utilities.FatalErrorCheck(err, "Unable to clone desired repo")
-	}
-
 	app.Version = Version
 	app.Author = "Benjamin Caldwell"
 
@@ -102,6 +87,7 @@ func Execute() {
 			ShortName: "i",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
+				config = getConfig(configFile)
 				installAction(c.Args(), config)
 			},
 		},
@@ -110,6 +96,7 @@ func Execute() {
 			ShortName: "u",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
+				config = getConfig(configFile)
 				err := updateAction(c.Args(), config)
 				utilities.ErrorCheck(err, "fetch updates")
 			},
@@ -119,14 +106,22 @@ func Execute() {
 			ShortName: "up",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
+				config = getConfig(configFile)
+				err := updateAction(c.Args(), config)
+				if utilities.ErrorCheck(err, "fetch updates") {
+					return
+				}
+				installAction(c.Args(), config)
 
 			},
 		},
 		{
 			Name:      "compile",
+			Aliases:   []string{"templates"},
 			ShortName: "c",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
+				config = getConfig(configFile)
 
 			},
 		},
@@ -135,7 +130,8 @@ func Execute() {
 			ShortName: "up",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
-
+				config = getConfig(configFile)
+				gitAction(c.Args(), config)
 			},
 		},
 		{
@@ -143,16 +139,48 @@ func Execute() {
 			ShortName: "up",
 			Usage:     "process each tasks and excuses them",
 			Action: func(c *cli.Context) {
-
+				config = getConfig(configFile)
+				fmt.Print(config.SrcDir)
 			},
 		},
 	}
+
 	if err := app.Run(os.Args); err != nil {
 		printer.Fail("Unexpected failure:", err)
 		os.Exit(1)
 	}
+	if config != nil {
+		createDfmrc(config.homeDir, config.configFile, config.SrcDir)
+	}
+}
 
-	createDfmrc(homeDir, configFile, config.SrcDir)
+func getConfig(configFile string) (config *Configuration) {
+	var err error
+	config = &Configuration{}
+	printer.Verbose = verbose
+	sh.DryRun = dryRun
+
+	printFlagOptions()
+
+	config.configFile = configFile
+
+	config.homeDir, err = detectHomeDir()
+	utilities.FatalErrorCheck(err, "determining user's homeDir")
+
+	config.configFile, err = detectConfigFile(config.configFile, config.homeDir)
+	utilities.FatalErrorCheck(err, "determining configuration file")
+
+	err = config.Parse(config.configFile)
+	utilities.FatalErrorCheck(err, fmt.Sprintf("Unable to parse configuration file: %s", configFile))
+
+	config.SetDefaults()
+
+	if _, err := Fs.Stat(config.SrcDir); os.IsNotExist(err) {
+		err = cloneRepo(config.Repo, config.SrcDir)
+		utilities.FatalErrorCheck(err, "Unable to clone desired repo")
+	}
+
+	return config
 }
 
 func detectHomeDir() (homeDir string, err error) {
@@ -188,7 +216,7 @@ func detectConfigFile(configFileFlag, homeDir string) (configFile string, err er
 		} else {
 			configFile, err = detectDefaultConfigFileLocation()
 			printer.VerboseWarning("config file not specified. Defaulting to %s", configFile)
-			return "", err
+			return configFile, err
 		}
 	} else {
 		if _, err := Fs.Stat(configFileFlag); os.IsNotExist(err) {
