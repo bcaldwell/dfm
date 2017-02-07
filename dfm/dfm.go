@@ -33,6 +33,8 @@ var (
 
 	// Fs is the afero filesystem used when making file system manipulations
 	Fs = afero.NewOsFs()
+
+	defaultConfigFiles = []string{"dfm.yml", "$HOME/.dotfiles/dfm.yml", "$HOME/dotfiles/dfm.yml", "$HOME/dfm.yml", "$HOME/.dfm.yml"}
 )
 
 // set bootstrap env on clone???
@@ -149,6 +151,7 @@ func Execute() {
 		printer.Fail("Unexpected failure:", err)
 		os.Exit(1)
 	}
+
 	if config != nil {
 		createDfmrc(config.homeDir, config.configFile, config.SrcDir)
 	}
@@ -249,13 +252,18 @@ func createDfmrc(homeDir, configFile, scrDir string) {
 	// offer to create dfmrc file at the end if it doesnt exist
 	rcFile := determineRcFile(homeDir)
 	if _, err := Fs.Stat(rcFile); os.IsNotExist(err) {
-		tempDir, err := afero.TempDir(Fs, "", "")
-		// should never error because uses os.TempDir() in the background which doesnt return an error
-		utilities.ErrorCheck(err, "Could not determine temp directory")
+		tempDir := afero.GetTempDir(Fs, "")
 		if path.Dir(scrDir) != tempDir {
 			configPrediction := path.Join(scrDir, "dfm.yml")
 			if _, err := Fs.Stat(configPrediction); err == nil {
 				configFile = configPrediction
+			}
+		}
+
+		for _, file := range defaultConfigFiles {
+			file = os.ExpandEnv(file)
+			if path.Clean(path.Dir(scrDir)) == path.Clean(file) {
+				return
 			}
 		}
 		if path.Base(scrDir) == ".dotfiles" {
@@ -284,7 +292,6 @@ func cloneRepo(repo, srcDir string) error {
 }
 
 func detectDefaultConfigFileLocation() (string, error) {
-	defaultConfigFiles := []string{"dfm.yml", "$HOME/.dotfiles/dfm.yml", "$HOME/dotfiles/dfm.yml", "$HOME/dfm.yml", "$HOME/.dfm.yml"}
 	for _, file := range defaultConfigFiles {
 		file = os.ExpandEnv(file)
 		if _, err := Fs.Stat(file); err == nil {

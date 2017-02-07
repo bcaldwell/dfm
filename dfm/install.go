@@ -2,7 +2,7 @@ package dfm
 
 import "github.com/benjamincaldwell/dfm/tasks"
 
-func installAction(args []string, config *Configuration) {
+func installAction(args []string, config *Configuration) error {
 	parameter := ""
 	if len(args) > 0 {
 		parameter = args[0]
@@ -13,5 +13,5 @@ func installAction(args []string, config *Configuration) {
 	tasks.Force = force
 	tasks.Overwrite = overwrite
 	tasks.Verbose = verbose
-	tasks.ExecuteTasks(config.Tasks, parameter)
+	return tasks.ExecuteTasks(config.Tasks, parameter)
 }

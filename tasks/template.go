@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 
+	"path/filepath"
+
 	"github.com/benjamincaldwell/dfm/templates"
 )
 
@@ -49,6 +51,7 @@ func processTemplate(tmpl Template) error {
 
 	dest := absPath(tmpl.Dest, DestDir)
 
+	os.MkdirAll(filepath.Dir(dest), 0755)
 	f, err := os.Create(dest)
 	defer f.Close()
 	if err != nil {

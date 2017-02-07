@@ -7,6 +7,7 @@ import (
 	"github.com/benjamincaldwell/dfm/tasks"
 	"github.com/benjamincaldwell/dfm/templates"
 	"github.com/benjamincaldwell/go-printer"
+	"github.com/spf13/afero"
 
 	"github.com/benjamincaldwell/dfm/utilities"
 	"github.com/ghodss/yaml"
@@ -23,7 +24,7 @@ type Configuration struct {
 }
 
 func (c *Configuration) Parse(file string) error {
-	// data, err := ioutil.ReadFile(file)
+	c.configFile = file
 	tpl, err := templates.New(
 		templates.AppendFiles(file),
 	)
@@ -44,7 +45,11 @@ func parseConfig(file string) (*Configuration, error) {
 
 func (c *Configuration) SetDefaults() {
 	if c.SrcDir == "" {
-		c.SrcDir = path.Join(c.homeDir, ".dotfiles")
+		if path.Clean(path.Dir(c.configFile)) == path.Clean(afero.GetTempDir(Fs, "")) {
+			c.SrcDir = path.Join(c.homeDir, ".dotfiles")
+		} else {
+			c.SrcDir = path.Dir(c.configFile)
+		}
 		printer.VerboseWarning("srcDir not specified. Defaulting to %s", c.SrcDir)
 	}
 	c.SrcDir = utilities.AbsPath(c.SrcDir, c.homeDir)
