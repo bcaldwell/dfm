@@ -3,6 +3,7 @@ package dfm
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"testing"
 
 	"github.com/benjamincaldwell/go-sh/mock"
@@ -70,12 +71,13 @@ func Test_cloneRepo(t *testing.T) {
 	srcDir, err := ioutil.TempDir("", "dfm-clone")
 	Fs.MkdirAll(srcDir, 0755)
 	defer Fs.RemoveAll("srcDir")
-	// Convey("Should clone given repo to given source directory", t, func() {
-	// 	So(err, ShouldEqual, nil)
-	// 	cloneRepo("git@github.com:benjamincaldwell/public-test.git", srcDir)
-	// 	_, err := Fs.Stat(path.Join(srcDir, "testing-file"))
-	// 	So(err, ShouldEqual, nil)
-	// })
+	Convey("Should clone given repo to given source directory", t, func() {
+		So(err, ShouldEqual, nil)
+		err = cloneRepo("git@github.com:benjamincaldwell/public-test.git", srcDir)
+		So(err, ShouldEqual, nil)
+		_, err := Fs.Stat(path.Join(srcDir, "testing-file"))
+		So(err, ShouldEqual, nil)
+	})
 
 	Convey("Should return an error if the clone failed", t, func() {
 		So(err, ShouldEqual, nil)
