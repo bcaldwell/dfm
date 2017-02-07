@@ -73,7 +73,7 @@ func Test_cloneRepo(t *testing.T) {
 	defer Fs.RemoveAll("srcDir")
 	Convey("Should clone given repo to given source directory", t, func() {
 		So(err, ShouldEqual, nil)
-		err = cloneRepo("git@github.com:benjamincaldwell/public-test.git", srcDir)
+		err = cloneRepo("https://github.com/benjamincaldwell/public-test.git", srcDir)
 		So(err, ShouldEqual, nil)
 		_, err := Fs.Stat(path.Join(srcDir, "testing-file"))
 		So(err, ShouldEqual, nil)
