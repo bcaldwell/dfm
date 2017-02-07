@@ -24,6 +24,7 @@ type Configuration struct {
 }
 
 func (c *Configuration) Parse(file string) error {
+	// TODO: only template compile tpl files and envExpand everything
 	c.configFile = file
 	tpl, err := templates.New(
 		templates.AppendFiles(file),
