@@ -154,6 +154,12 @@ func Execute() {
 	}
 }
 
+func setenv(config *Configuration) {
+	os.Setenv("DFM_SRC_DIR", config.SrcDir)
+	os.Setenv("DFM_DEST_DIR", config.DestDir)
+	os.Setenv("DFM_REPO", config.Repo)
+}
+
 func getConfig(configFile string) (config *Configuration) {
 	var err error
 	config = &Configuration{}
@@ -179,7 +185,7 @@ func getConfig(configFile string) (config *Configuration) {
 		err = cloneRepo(config.Repo, config.SrcDir)
 		utilities.FatalErrorCheck(err, "Unable to clone desired repo")
 	}
-
+	setenv(config)
 	return config
 }
 
