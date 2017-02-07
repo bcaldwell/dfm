@@ -1,12 +1,14 @@
 package dfm
 
 import (
-	"io/ioutil"
+	"bytes"
 	"path"
 
 	"github.com/benjamincaldwell/dfm/tasks"
+	"github.com/benjamincaldwell/dfm/templates"
 	"github.com/benjamincaldwell/go-printer"
 
+	"github.com/benjamincaldwell/dfm/utilities"
 	"github.com/ghodss/yaml"
 )
 
@@ -21,9 +23,14 @@ type Configuration struct {
 }
 
 func (c *Configuration) Parse(file string) error {
-	data, err := ioutil.ReadFile(file)
+	// data, err := ioutil.ReadFile(file)
+	tpl, err := templates.New(
+		templates.AppendFiles(file),
+	)
+	var data bytes.Buffer
+	tpl.Execute(&data)
 	if err == nil {
-		err = yaml.Unmarshal(data, c)
+		err = yaml.Unmarshal(data.Bytes(), c)
 		return err
 	}
 	return err
@@ -40,9 +47,11 @@ func (c *Configuration) SetDefaults() {
 		c.SrcDir = path.Join(c.homeDir, ".dotfiles")
 		printer.VerboseWarning("srcDir not specified. Defaulting to %s", c.SrcDir)
 	}
+	c.SrcDir = utilities.AbsPath(c.SrcDir, c.homeDir)
 
 	if c.DestDir == "" {
 		c.DestDir = c.homeDir
 		printer.VerboseWarning("destDir not specified. Defaulting to %s", c.DestDir)
 	}
+	c.DestDir = utilities.AbsPath(c.DestDir, c.homeDir)
 }

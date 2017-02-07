@@ -9,7 +9,6 @@ import (
 	"io"
 
 	"github.com/Masterminds/sprig"
-	"github.com/benjamincaldwell/dfm/utilities"
 )
 
 // Tpl is the template struct the contains template options
@@ -171,7 +170,7 @@ func (tmpl *Tpl) Execute(wr io.Writer) (err error) {
 		temp, err = temp.ParseGlob(tmpl.Glob)
 	}
 
-	if utilities.ErrorCheck(err, "Parse template") {
+	if err != nil {
 		return err
 	}
 

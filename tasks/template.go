@@ -3,10 +3,8 @@ package tasks
 import (
 	"errors"
 	"os"
-	"path"
 
 	"github.com/benjamincaldwell/dfm/templates"
-	"github.com/benjamincaldwell/dfm/utilities"
 )
 
 var errNoDest = errors.New("template save destination was not specified")
@@ -27,15 +25,30 @@ func processTemplate(tmpl Template) error {
 	if tmpl.Dest == "" {
 		return errNoDest
 	}
+	glob := tmpl.Glob
+	if glob != "" {
+		glob = absPath(glob, SrcDir)
+	}
 	tpl, err := templates.New(
-		templates.Files(tmpl.Files),
 		templates.TemplateString(tmpl.TemplateString),
-		templates.Glob(tmpl.Glob),
+		templates.Glob(glob),
 		templates.MergeVariables(tmpl.Vars),
 	)
-	utilities.ErrorCheck(err, "parsing template arguments")
-	// todo...do this right
-	dest := path.Join(DestDir, tmpl.Dest)
+	if err != nil {
+		return err
+	}
+	for _, file := range tmpl.Files {
+		file = absPath(file, SrcDir)
+		tpl, err = tpl.SetOptions(
+			templates.AppendFiles(file),
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	dest := absPath(tmpl.Dest, DestDir)
+
 	f, err := os.Create(dest)
 	defer f.Close()
 	if err != nil {

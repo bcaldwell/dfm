@@ -26,12 +26,15 @@ type Task struct {
 	importance byte
 }
 
-var SrcDir string
-var DestDir string
-var Verbose bool
-var DryRun bool
-var Force bool
-var Overwrite bool
+var (
+	SrcDir    string
+	DestDir   string
+	Verbose   bool
+	DryRun    bool
+	Force     bool
+	Overwrite bool
+	absPath   = utilities.AbsPath
+)
 
 func ExecuteTasks(tasks map[string]Task, task string) error {
 	taskList := getTaskList(task, tasks)

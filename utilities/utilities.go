@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/benjamincaldwell/go-printer"
@@ -51,6 +52,14 @@ func ErrorCheck(err error, message string) bool {
 		return true
 	}
 	return false
+}
+
+func AbsPath(file, defaultRoot string) (abs string) {
+	abs = os.ExpandEnv(file)
+	if !path.IsAbs(abs) {
+		abs = path.Join(defaultRoot, abs)
+	}
+	return abs
 }
 
 // AskForConfirmation asks the user for confirmation. A user must type in "yes" or "no" and

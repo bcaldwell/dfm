@@ -46,15 +46,9 @@ func processLink(params string) error {
 }
 
 func createLink(src string, dest string, mode os.FileMode) error {
-	srcAbs := src
-	if !path.IsAbs(srcAbs) {
-		srcAbs = path.Join(SrcDir, src)
-	}
+	srcAbs := absPath(src, SrcDir)
 
-	destAbs := dest
-	if !path.IsAbs(destAbs) {
-		destAbs = path.Join(DestDir, dest)
-	}
+	destAbs := absPath(dest, DestDir)
 
 	if _, err := os.Stat(srcAbs); os.IsNotExist(err) {
 		return fmt.Errorf("source path %s does not exist in filesystem", srcAbs)
