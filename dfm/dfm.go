@@ -16,10 +16,12 @@ import (
 )
 
 var (
-	dryRun    bool
-	verbose   bool
-	force     bool
-	overwrite bool
+	dryRun        bool
+	verbose       bool
+	force         bool
+	overwrite     bool
+	noDfmrcCreate bool
+	destDir       string
 
 	// Version represents the current version of the dfm cli --> Set by build flags
 	Version string
@@ -50,6 +52,8 @@ func Execute() {
 		Usage: "print only the version",
 	}
 
+	fmt.Printf("%+v\n", os.Args)
+
 	app := cli.NewApp()
 	app.Name = "dfm"
 	app.Usage = "an easy way to manage dotfiles"
@@ -73,10 +77,20 @@ func Execute() {
 			Name:  "overwrite",
 			Usage: "overwrite existing files or folders when linking",
 		},
+		cli.BoolFlag{
+			Name:        "noDfmrcCreate",
+			Usage:       "",
+			Destination: &noDfmrcCreate,
+		},
 		cli.StringFlag{
 			Name:        "config, c",
 			Usage:       "sets location of dfm config file or url with config file. Defaults to ~/.dfm.yml.",
 			Destination: &configFile,
+		},
+		cli.StringFlag{
+			Name:        "destdir",
+			Usage:       "sets the destination directory. Overwrites destdir in configuration file",
+			Destination: &destDir,
 		},
 	}
 
@@ -114,7 +128,6 @@ func Execute() {
 					return
 				}
 				installAction(c.Args(), config)
-
 			},
 		},
 		{
@@ -147,14 +160,14 @@ func Execute() {
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(os.Args); err != nil && !noDfmrcCreate {
 		printer.Fail("Unexpected failure:", err)
 		os.Exit(1)
 	}
 
-	if config != nil {
-		createDfmrc(config.homeDir, config.configFile, config.SrcDir)
-	}
+	// if config != nil {
+	// 	createDfmrc(config.homeDir, config.configFile, config.SrcDir)
+	// }
 }
 
 func setenv(config *Configuration) {
@@ -183,6 +196,9 @@ func getConfig(configFile string) (config *Configuration) {
 	utilities.FatalErrorCheck(err, fmt.Sprintf("Unable to parse configuration file: %s", configFile))
 
 	config.SetDefaults()
+	if destDir != "" {
+		config.DestDir = destDir
+	}
 
 	if _, err := Fs.Stat(config.SrcDir); os.IsNotExist(err) {
 		err = cloneRepo(config.Repo, config.SrcDir)
@@ -225,7 +241,6 @@ func detectConfigFile(configFileFlag, homeDir string) (configFile string, err er
 		} else {
 			configFile, err = detectDefaultConfigFileLocation()
 			printer.VerboseWarning("config file not specified. Defaulting to %s", configFile)
-			return configFile, err
 		}
 	} else {
 		if _, err := Fs.Stat(configFileFlag); os.IsNotExist(err) {
@@ -241,11 +256,13 @@ func detectConfigFile(configFileFlag, homeDir string) (configFile string, err er
 				err = utilities.DownloadToFile(configURL, configFile)
 				utilities.ErrorCheck(err, "downloading configuration file")
 			}
+		} else {
+			configFile = configFileFlag
 		}
 	}
 
 	printer.VerboseInfoBar("Using configuration file located at %s", configFile)
-	return
+	return configFile, err
 }
 
 func createDfmrc(homeDir, configFile, scrDir string) {
