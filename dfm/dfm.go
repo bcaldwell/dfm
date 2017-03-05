@@ -52,8 +52,6 @@ func Execute() {
 		Usage: "print only the version",
 	}
 
-	fmt.Printf("%+v\n", os.Args)
-
 	app := cli.NewApp()
 	app.Name = "dfm"
 	app.Usage = "an easy way to manage dotfiles"
