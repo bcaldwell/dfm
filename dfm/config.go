@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"path"
 
-	"github.com/benjamincaldwell/dfm/tasks"
-	"github.com/benjamincaldwell/dfm/templates"
-	"github.com/benjamincaldwell/go-printer"
+	"github.com/bcaldwell/dfm/tasks"
+	"github.com/bcaldwell/dfm/templates"
+	"github.com/bcaldwell/go-printer"
 	"github.com/spf13/afero"
 
-	"github.com/benjamincaldwell/dfm/utilities"
+	"github.com/bcaldwell/dfm/utilities"
 	"github.com/ghodss/yaml"
 )
 

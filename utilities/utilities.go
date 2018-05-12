@@ -10,7 +10,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/benjamincaldwell/go-printer"
+	"github.com/bcaldwell/go-printer"
 )
 
 func StringInSlice(a string, list []string) bool {
@@ -70,7 +70,7 @@ func AskForConfirmation(s string) bool {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		printer.InfoBar("%s?%s %s [y/n]: ", printer.Green+printer.Bold, printer.Nc, s)
+		printer.InfoBar("%s?%s %s [y/n]: ", printer.GreenColor+printer.BoldString, s, printer.NoColor+printer.NoboldString)
 		fmt.Printf("\033[1A\033[%dC", len(s)+12)
 		response, err := reader.ReadString('\n')
 		if err != nil {

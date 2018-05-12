@@ -15,6 +15,6 @@ then
   echo "Building $BUILD_VERSION"
   gox -ldflags "-X main.Version=${BUILD_VERSION} -X main.BuildDate=${BUILD_DATE}" -osarch="linux/amd64 darwin/amd64" -parallel=2 -output "dist/dfm_{{.OS}}_{{.Arch}}"
 
-  ghr -t "$GITHUB_TOKEN" -u benjamincaldwell -r dfm "$BUILD_VERSION" dist/
+  ghr -t "$GITHUB_TOKEN" -u bcaldwell -r dfm "$BUILD_VERSION" dist/
 
 fi

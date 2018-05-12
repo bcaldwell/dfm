@@ -1,8 +1,8 @@
 package dfm
 
 import (
-	"github.com/benjamincaldwell/go-printer"
-	"github.com/benjamincaldwell/go-sh"
+	"github.com/bcaldwell/go-printer"
+	"github.com/bcaldwell/go-sh"
 )
 
 func updateAction(args []string, config *Configuration) (err error) {

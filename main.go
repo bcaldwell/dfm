@@ -1,6 +1,6 @@
 package main
 
-import "github.com/benjamincaldwell/dfm/dfm"
+import "github.com/bcaldwell/dfm/dfm"
 
 var Version string
 var BuildDate string

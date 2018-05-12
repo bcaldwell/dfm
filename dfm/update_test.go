@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/benjamincaldwell/go-sh/mock"
+	"github.com/bcaldwell/go-sh/mock"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

@@ -1,6 +1,6 @@
 ---
 
-repo: benjamincaldwell/dotfiles
+repo: bcaldwell/dotfiles
 
 alias:
   clone: git clone 
@@ -10,7 +10,7 @@ tasks:
     when:
       condition: "echo"
     # cmd:
-    #   - "@clone github.com/benjamincaldwell/devctl"
+    #   - "@clone github.com/bcaldwell/devctl"
     links:
       - devctlconfig:.devctlconfig
     # acts as a dep
@@ -29,13 +29,13 @@ tasks:
 
   zsh:
     cmd:
-      - "@clone github.com/benjamincaldwell/devctl"
+      - "@clone github.com/bcaldwell/devctl"
 
   zsh-linux:
     when:
       os: "linux"
     cmd:
-      - "@clone github.com/benjamincaldwell/devctl"
+      - "@clone github.com/bcaldwell/devctl"
     deps:
       - fish
 
@@ -43,7 +43,7 @@ tasks:
     when:
       os: "darwin"
     cmd:
-      - "@clone github.com/benjamincaldwell/devctl"
+      - "@clone github.com/bcaldwell/devctl"
     deps:
       - zsh
 

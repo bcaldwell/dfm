@@ -1,6 +1,6 @@
 package dfm
 
-import "github.com/benjamincaldwell/dfm/tasks"
+import "github.com/bcaldwell/dfm/tasks"
 
 func installAction(args []string, config *Configuration) error {
 	parameter := ""

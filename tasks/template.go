@@ -6,7 +6,7 @@ import (
 
 	"path/filepath"
 
-	"github.com/benjamincaldwell/dfm/templates"
+	"github.com/bcaldwell/dfm/templates"
 )
 
 var errNoDest = errors.New("template save destination was not specified")

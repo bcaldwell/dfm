@@ -1,7 +1,7 @@
 machine:
   environment:
     GODIST: "go1.7.3.linux-amd64.tar.gz"
-    IMPORT_PATH: "/home/ubuntu/.go_workspace/src/github.com/benjamincaldwell"
+    IMPORT_PATH: "/home/ubuntu/.go_workspace/src/github.com/bcaldwell"
     APP_PATH: "$IMPORT_PATH/dfm"
   post:
     - mkdir -p downloads

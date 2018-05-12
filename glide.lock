@@ -3,9 +3,9 @@ updated: 2017-02-06T18:10:18.930052881-05:00
 imports:
 - name: github.com/aokoli/goutils
   version: 9c37978a95bd5c709a15883b6242714ea6709e64
-- name: github.com/benjamincaldwell/go-printer
+- name: github.com/bcaldwell/go-printer
   version: 02c5cdb1f2fe20c640b0b0a023debdc6a03fab26
-- name: github.com/benjamincaldwell/go-sh
+- name: github.com/bcaldwell/go-sh
   version: 67160723b5733b6fbc9ade3a75126bc558867666
   subpackages:
   - mock

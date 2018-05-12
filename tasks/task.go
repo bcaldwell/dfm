@@ -5,9 +5,9 @@ import (
 
 	"strings"
 
-	"github.com/benjamincaldwell/dfm/utilities"
-	"github.com/benjamincaldwell/go-printer"
-	"github.com/benjamincaldwell/go-sh"
+	"github.com/bcaldwell/dfm/utilities"
+	"github.com/bcaldwell/go-printer"
+	"github.com/bcaldwell/go-sh"
 )
 
 type Task struct {

@@ -12,7 +12,7 @@ import (
 
 	"github.com/ghodss/yaml"
 
-	"github.com/benjamincaldwell/dfm/templates"
+	"github.com/bcaldwell/dfm/templates"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

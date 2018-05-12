@@ -8,9 +8,9 @@ import (
 	"path"
 	"regexp"
 
-	"github.com/benjamincaldwell/dfm/utilities"
-	"github.com/benjamincaldwell/go-printer"
-	"github.com/benjamincaldwell/go-sh"
+	"github.com/bcaldwell/dfm/utilities"
+	"github.com/bcaldwell/go-printer"
+	"github.com/bcaldwell/go-sh"
 	"github.com/spf13/afero"
 	"github.com/urfave/cli"
 )

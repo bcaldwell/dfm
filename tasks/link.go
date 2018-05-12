@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/benjamincaldwell/go-printer"
+	"github.com/bcaldwell/go-printer"
 )
 
 func parseLink(params string) (src string, dest string, mode os.FileMode, err error) {

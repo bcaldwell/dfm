@@ -1,7 +1,7 @@
 # dfm
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/benjamincaldwell/dfm)](https://goreportcard.com/report/github.com/benjamincaldwell/dfm) [![codebeat badge](https://codebeat.co/badges/9d235a39-896d-4dd3-9cf8-bb5f85b8cf66)](https://codebeat.co/projects/github-com-benjamincaldwell-dfm)
-[![Build Status](https://travis-ci.org/benjamincaldwell/dfm.svg?branch=master)](https://travis-ci.org/benjamincaldwell/dfm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bcaldwell/dfm)](https://goreportcard.com/report/github.com/bcaldwell/dfm) [![codebeat badge](https://codebeat.co/badges/9d235a39-896d-4dd3-9cf8-bb5f85b8cf66)](https://codebeat.co/projects/github-com-bcaldwell-dfm)
+[![Build Status](https://travis-ci.org/bcaldwell/dfm.svg?branch=master)](https://travis-ci.org/bcaldwell/dfm)
 
 dfm is a tool for managing dotfiles. dfm works best when using git to manage dotfile but will also work without.
 
@@ -32,12 +32,12 @@ dfm is a tool for managing dotfiles. dfm works best when using git to manage dot
 
 ### Install script
 ```
-curl -o- https://raw.githubusercontent.com/benjamincaldwell/dfm/master/scripts/install.sh | bash
+curl -o- https://raw.githubusercontent.com/bcaldwell/dfm/master/scripts/install.sh | bash
 ```
 
 
 ### Manual Install
-Download the applicable binary from [releases](https://github.com/benjamincaldwell/dfm/releases)
+Download the applicable binary from [releases](https://github.com/bcaldwell/dfm/releases)
 
 
 ## Yaml configuration file
@@ -47,7 +47,7 @@ Download the applicable binary from [releases](https://github.com/benjamincaldwe
 ---
 
 # remote location of repository [optional]
-repo: git@github.com:benjamincaldwell/dotfiles.git
+repo: git@github.com:bcaldwell/dotfiles.git
 
 # Links occur fron srcDir/path to destDir/path
 # location of source files. Defaults to $HOME/.dotfiles

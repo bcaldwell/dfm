@@ -6,7 +6,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/benjamincaldwell/go-sh/mock"
+	"github.com/bcaldwell/go-sh/mock"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 )
@@ -73,7 +73,7 @@ func Test_cloneRepo(t *testing.T) {
 	defer Fs.RemoveAll("srcDir")
 	Convey("Should clone given repo to given source directory", t, func() {
 		So(err, ShouldEqual, nil)
-		err = cloneRepo("https://github.com/benjamincaldwell/public-test.git", srcDir)
+		err = cloneRepo("https://github.com/bcaldwell/public-test.git", srcDir)
 		So(err, ShouldEqual, nil)
 		_, err := Fs.Stat(path.Join(srcDir, "testing-file"))
 		So(err, ShouldEqual, nil)
@@ -81,7 +81,7 @@ func Test_cloneRepo(t *testing.T) {
 
 	Convey("Should return an error if the clone failed", t, func() {
 		So(err, ShouldEqual, nil)
-		err := cloneRepo("git@github.com:benjamincaldwell/public-doesnt-exist.git", srcDir)
+		err := cloneRepo("git@github.com:bcaldwell/public-doesnt-exist.git", srcDir)
 		So(err, ShouldNotEqual, nil)
 	})
 }
