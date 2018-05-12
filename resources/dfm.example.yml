@@ -1,0 +1,67 @@
+---
+
+repo: bcaldwell/dotfiles
+
+alias:
+  clone: git clone 
+
+tasks:
+  devctl:
+    when:
+      condition: "echo"
+    # cmd:
+    #   - "@clone github.com/bcaldwell/devctl"
+    links:
+      - devctlconfig:.devctlconfig
+    # acts as a dep
+    git:
+      repo: something
+      dest: somewhere
+      branch: dev
+      ref: git ref
+    install-deps:
+      install:
+        - git
+      brew:
+        install:
+          - zsh
+
+
+  zsh:
+    cmd:
+      - "@clone github.com/bcaldwell/devctl"
+
+  zsh-linux:
+    when:
+      os: "linux"
+    cmd:
+      - "@clone github.com/bcaldwell/devctl"
+    deps:
+      - fish
+
+  zsh-darwin:
+    when:
+      os: "darwin"
+    cmd:
+      - "@clone github.com/bcaldwell/devctl"
+    deps:
+      - zsh
+
+  linux:
+    when:
+      os: "linux"
+    # condition: some shell command that returns an error or not
+    deps:
+      - zsh
+
+  darwin:
+    when:
+      os: "darwin"
+    # condition: some shell command that returns an error or not
+    # parameter: "server" passed in as the second argument 
+    deps:
+      - zsh
+      - zsh-darwin
+      - zsh-linux
+    cmd:
+      - bash mac.sh

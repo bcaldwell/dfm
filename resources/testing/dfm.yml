@@ -1,0 +1,40 @@
+---
+tasks:
+  task_1:
+  #   when:
+  #     condition: "echo"
+    # cmd:
+    #   - "ls"
+    links:
+      - "link-test:link-test-1"
+
+  task_2:
+    cmd:
+      - "ls"
+    links:
+      - "link-test"
+
+  task_3:
+    when:
+      os: "linux"
+    cmd:
+      - "ls"
+    deps:
+      - task_2
+      - task_1
+      - task_5
+
+  task_4:
+    when:
+      os: "darwin"
+    cmd:
+      - "ls"
+    deps:
+      - task_2
+      - task_1
+      - task_5
+
+  task_5:
+    template:
+      templateString: "really important configuration file for {{.os}}"
+      dest: temp/file_compiled
