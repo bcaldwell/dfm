@@ -25,8 +25,7 @@ var (
 	noDfmrcCreate bool
 	destDir       string
 
-	showDate        bool
-	printConfigFile bool
+	showDate bool
 
 	// Version represents the current version of the dfm cli --> Set by build flags
 	Version string
@@ -150,9 +149,17 @@ func Execute() {
 			fmt.Println(string(jsonConfig))
 		},
 	}
-	configCommand.Flags().BoolVar(&printConfigFile, "filename", false, "Show dfm configuration file location")
 
-	var versionCommand = &cobra.Command{
+	configFileCommand := &cobra.Command{
+		Use:   "configfile",
+		Short: "Prints current configuration file",
+		Run: func(cmd *cobra.Command, args []string) {
+			config = getConfig(configFile)
+			fmt.Println(config.configFile)
+		},
+	}
+
+	versionCommand := &cobra.Command{
 		Use: "version",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(Version)
@@ -163,7 +170,7 @@ func Execute() {
 	}
 	versionCommand.Flags().BoolVarP(&showDate, "date", "d", false, "Show build date")
 
-	rootCmd.AddCommand(installCommand, updateCommand, upgradeCommand, gitCommand, pathCommand, configCommand, versionCommand)
+	rootCmd.AddCommand(installCommand, updateCommand, upgradeCommand, gitCommand, pathCommand, configCommand, versionCommand, configFileCommand)
 
 	if err := rootCmd.Execute(); err != nil && !noDfmrcCreate {
 		printer.Fail("Unexpected failure:", err)
