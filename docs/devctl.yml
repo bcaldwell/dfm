@@ -1,8 +1,0 @@
-ruby:
-  version: 2.3
-
-scripts:
-  start: 
-    command: "jekyll serve"
-  build: 
-    command: "jekyll build"

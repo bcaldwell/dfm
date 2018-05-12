@@ -1,1 +1,0 @@
-{{ "hello!" | upper | repeat 5 }}
