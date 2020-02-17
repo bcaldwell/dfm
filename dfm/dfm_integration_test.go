@@ -21,7 +21,7 @@ func TestIntegration(t *testing.T) {
 		So(err, ShouldEqual, nil)
 		defer os.RemoveAll(dir)
 
-		os.Args = []string{"dfm", "--noDfmrcCreate", "--config", configFile, "--destdir", dir, "install"}
+		os.Args = []string{"dfm", "--config", configFile, "--destdir", dir, "install"}
 		Execute()
 
 		srcDir := filepath.Dir(configFile)

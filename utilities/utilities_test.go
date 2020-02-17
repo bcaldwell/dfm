@@ -10,7 +10,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var testError = errors.New("error for testing")
+var testErr = errors.New("some error")
 
 func TestStringInSlice(t *testing.T) {
 	Convey("Should return true if string is in slice", t, func() {
@@ -122,19 +122,19 @@ func TestFatalErrorCheck(t *testing.T) {
 }
 
 func TestErrorCheck(t *testing.T) {
-	Convey("Should return the bool of if an error occur and print out message if it did", t, func() {
-
+	Convey("Should return the bool if an error occurred and print out message if it did", t, func() {
 		type args struct {
 			err     error
 			message string
 		}
+
 		tests := []struct {
 			args args
 			want bool
 		}{
 			{
 				args{
-					testError,
+					testErr,
 					"error should exist",
 				},
 				true,
@@ -147,6 +147,7 @@ func TestErrorCheck(t *testing.T) {
 				false,
 			},
 		}
+
 		for _, tt := range tests {
 			So(ErrorCheck(tt.args.err, tt.args.message), ShouldEqual, tt.want)
 		}

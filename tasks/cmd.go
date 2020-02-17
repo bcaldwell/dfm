@@ -10,9 +10,12 @@ func processCmd(cmd string) error {
 		printer.InfoBar(cmd)
 		return nil
 	}
+
 	command := sh.Command("sh", "-c", cmd).SetDir(SrcDir)
+
 	if Verbose {
 		return command.PrintOutput()
 	}
+
 	return command.Run()
 }

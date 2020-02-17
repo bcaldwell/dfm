@@ -10,16 +10,22 @@ import (
 	"github.com/bcaldwell/go-printer"
 )
 
-func parseLink(params string) (src string, dest string, mode os.FileMode, err error) {
+func parseLink(params string) (string, string, os.FileMode, error) {
+	var src, dest string
+
+	var mode os.FileMode
+
 	paramParts := strings.Split(params, ":")
 	if len(paramParts) > 3 {
 		printer.Info("droping last part of link param %s from %s", strings.Join(paramParts[3:], ":"), params)
 	}
+
 	if len(paramParts) == 3 {
 		var parsed uint64
-		parsed, err = strconv.ParseUint(paramParts[2], 0, 64)
+
+		parsed, err := strconv.ParseUint(paramParts[2], 0, 64)
 		if err != nil {
-			return
+			return src, dest, mode, err
 		}
 
 		mode = os.FileMode(parsed)
@@ -34,7 +40,8 @@ func parseLink(params string) (src string, dest string, mode os.FileMode, err er
 	} else {
 		dest = path.Join(DestDir, path.Base(src))
 	}
-	return
+
+	return src, dest, mode, nil
 }
 
 func processLink(params string) error {
@@ -42,6 +49,7 @@ func processLink(params string) error {
 	if err == nil {
 		return createLink(src, dest, mode)
 	}
+
 	return err
 }
 
@@ -58,7 +66,6 @@ func createLink(src string, dest string, mode os.FileMode) error {
 		if Force || Overwrite {
 			if DryRun || Verbose {
 				printer.WarningBar("removing %s", destAbs)
-
 			} else {
 				os.RemoveAll(destAbs)
 			}
@@ -71,6 +78,7 @@ func createLink(src string, dest string, mode os.FileMode) error {
 
 	if DryRun || Verbose {
 		printer.InfoBar("Linking %s to %s", srcAbs, destAbs)
+
 		if DryRun {
 			return nil
 		}

@@ -23,7 +23,7 @@ type Task struct {
 	Env      []string
 	Template Template
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on
-	importance byte
+	// importance byte
 }
 
 var (
@@ -46,16 +46,21 @@ func ExecuteTasks(tasks map[string]Task, task string) error {
 
 	for _, task := range taskList {
 		printer.Info("Executing %s\n", task)
-		tasks[task].Execute(task)
+		err := tasks[task].Execute(task)
+
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
 // look at multiple
 func (t Task) calculateImportance(parameter string) byte {
-	if strings.ToLower(runtime.GOOS) == strings.ToLower(t.When.OS) {
+	if strings.EqualFold(runtime.GOOS, t.When.OS) {
 		return 2
-	} else if parameter != "" && strings.ToLower(parameter) == strings.ToLower(t.When.Parameter) {
+	} else if parameter != "" && strings.EqualFold(parameter, t.When.Parameter) {
 		return 2
 	} else if t.When.Condition != "" {
 		sh.DryRun = false
@@ -72,6 +77,7 @@ func (t Task) calculateImportance(parameter string) byte {
 	} else if t.When.Condition == "" && t.When.OS == "" && t.When.Parameter == "" && t.When.NotInstalled == "" {
 		return 1
 	}
+
 	return 0
 }
 
@@ -89,6 +95,7 @@ func getTaskList(parameter string, tasks map[string]Task) (tasksList []string) {
 			}
 		}
 	}
+
 	if len(tasksList) == 0 {
 		printer.Error("no tasks to run")
 	}
@@ -102,6 +109,7 @@ func (t Task) appendTaskDependencyList(dependencies []string, parameter string, 
 	if len(t.Deps) == 0 {
 		return []string{}
 	}
+
 	for _, depString := range t.Deps {
 		if dep, ok := tasks[depString]; ok {
 			// fmt.Printf("%s %+v %t\n", depString, dependencies, utilities.StringInSlice(depString, dependencies))
@@ -113,6 +121,7 @@ func (t Task) appendTaskDependencyList(dependencies []string, parameter string, 
 			printer.Warning("could find task %s", depString)
 		}
 	}
+
 	return dependencies
 }
 
@@ -130,6 +139,7 @@ func (t Task) Execute(name string) error {
 
 	if t.Template.isDefined() {
 		printer.VerboseInfo("Processing template")
+
 		err := processTemplate(t.Template)
 		if err != nil {
 			printer.Error("%s: %s", name, err)

@@ -23,11 +23,11 @@ func TestIntegration(t *testing.T) {
 		})
 		configFile, err := filepath.Abs("../resources/testing/dfm.yml")
 		So(err, ShouldEqual, nil)
-		tpl, err := templates.New(
+		tpl, _ := templates.New(
 			templates.AppendFiles(configFile),
 		)
 		var data bytes.Buffer
-		tpl.Execute(&data)
+		_ = tpl.Execute(&data)
 		err = yaml.Unmarshal(data.Bytes(), &tasks)
 		So(err, ShouldEqual, nil)
 
@@ -35,8 +35,7 @@ func TestIntegration(t *testing.T) {
 
 		dir, err := ioutil.TempDir("", "dfm-test")
 		So(err, ShouldEqual, nil)
-		// defer os.RemoveAll(dir)
-		fmt.Println(dir)
+		defer os.RemoveAll(dir)
 
 		DestDir = dir
 
@@ -58,5 +57,4 @@ func TestIntegration(t *testing.T) {
 		expected = fmt.Sprintf("really important configuration file for %s", runtime.GOOS)
 		So(string(compiledContents), ShouldEqual, expected)
 	})
-
 }
