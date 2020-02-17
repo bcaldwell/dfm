@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"unicode"
 
 	"github.com/bcaldwell/go-printer"
 )
@@ -68,6 +69,7 @@ func (f *File) Process() (string, error) {
 	for i, line := range lines {
 		if ok, pragma := f.getPragmaForLine(line); ok {
 			nextLine, blockStart, blockEnd := f.processPragma(pragma)
+
 			if blockStart {
 				commentBlock = true
 			} else if blockEnd {
@@ -85,19 +87,29 @@ func (f *File) Process() (string, error) {
 			continue
 		}
 
+		// fmt.Println(commentNextLine, uncommentNextLine, commentBlock)
+
 		if commentNextLine {
 			lines[i] = f.comment(line)
-			commentNextLine = false
+
+			if !commentBlock {
+				commentNextLine = false
+			}
 
 			continue
 		} else if uncommentNextLine {
 			lines[i] = f.unComment(line)
+
+			if !commentBlock {
+				uncommentNextLine = false
+			}
+
 			continue
 		}
 
-		if commentBlock {
-			lines[i] = f.comment(line)
-		}
+		// if commentBlock {
+		// 	lines[i] = f.comment(line)
+		// }
 	}
 
 	return strings.Join(lines, "\n"), nil
@@ -105,18 +117,24 @@ func (f *File) Process() (string, error) {
 
 // this isnt working if the comment is the start of the line
 func (f *File) unComment(line string) string {
-	if strings.HasPrefix(line, f.CommentString) {
+	strippedLine := strings.TrimLeftFunc(line, unicode.IsSpace)
+	padding := len(line) - len(strippedLine)
+
+	if strings.HasPrefix(strippedLine, f.CommentString) {
 		// remove comment by removing the first x characters and a space where x is the length of the comment
 		commentLength := len(f.CommentString) + 1
-		line = line[commentLength:]
+		line = line[:padding] + strippedLine[commentLength:]
 	}
 
 	return line
 }
 
 func (f *File) comment(line string) string {
-	if !strings.HasPrefix(line, f.CommentString) {
-		line = fmt.Sprintf("%s %v", f.CommentString, line)
+	strippedLine := strings.TrimLeftFunc(line, unicode.IsSpace)
+	padding := len(line) - len(strippedLine)
+
+	if !strings.HasPrefix(strippedLine, f.CommentString) {
+		line = fmt.Sprintf("%s%s %v", line[:padding], f.CommentString, strippedLine)
 	}
 
 	return line
@@ -183,11 +201,9 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 		switch strings.ToLower(k) {
 		case "start":
 			commentBlockStart = true
-			pragmaParsed = true
 
 		case "end":
 			commentBlockEnd = true
-			pragmaParsed = true
 
 		case "host":
 			if strings.EqualFold(f.hostname, v) {
@@ -223,10 +239,10 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 
 	// if nothing was parsed return false for both
 	if !pragmaParsed {
-		return false, false, false
+		return false, commentBlockStart, commentBlockEnd
 	}
 
-	// only enable commentBlock if commentLine is true, aka the other pragmas in the line were true
+	// only enable commentBlock if commentLine is false, aka the other pragmas in the line were true
 	commentBlockStart = commentBlockStart && commentLine
 	commentBlockEnd = commentBlockEnd && commentLine
 
