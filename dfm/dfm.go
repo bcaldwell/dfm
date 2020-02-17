@@ -150,6 +150,16 @@ func Execute() {
 		},
 	}
 
+	pragmaCommand := &cobra.Command{
+		Use:   "pragma",
+		Short: "Applies pragma to all files in src directory",
+		Run: func(cmd *cobra.Command, args []string) {
+			config = getConfig(configFile)
+			err := pragmaAction(args, config)
+			utilities.ErrorCheck(err, "pragma")
+		},
+	}
+
 	configFileCommand := &cobra.Command{
 		Use:   "configfile",
 		Short: "Prints current configuration file",
@@ -170,7 +180,17 @@ func Execute() {
 	}
 	versionCommand.Flags().BoolVarP(&showDate, "date", "d", false, "Show build date")
 
-	rootCmd.AddCommand(installCommand, updateCommand, upgradeCommand, gitCommand, pathCommand, configCommand, versionCommand, configFileCommand)
+	rootCmd.AddCommand(
+		installCommand,
+		updateCommand,
+		upgradeCommand,
+		gitCommand,
+		pragmaCommand,
+		pathCommand,
+		configCommand,
+		versionCommand,
+		configFileCommand,
+	)
 
 	if err := rootCmd.Execute(); err != nil && !noDfmrcCreate {
 		printer.Fail("Unexpected failure:", err)

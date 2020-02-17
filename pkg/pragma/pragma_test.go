@@ -135,16 +135,16 @@ func TestFile_getPragmaForLine(t *testing.T) {
 
 func TestFile_getPragmaForLine2(t *testing.T) {
 	f := NewFile("")
-	fmt.Println(f.setupFileForProcessing())
-	fmt.Println(f.getPragmaForLine("# test"))
-	fmt.Println(f.getPragmaForLine("# @dfm"))
-	fmt.Println(f.getPragmaForLine("# @dfm start"))
-	fmt.Println(f.getPragmaForLine("// @dfm start"))
-	fmt.Println(f.getPragmaForLine("# @dfm host=test"))
-	fmt.Println(f.getPragmaForLine("# @dfm host=test start"))
-	fmt.Println(f.getPragmaForLine("# @dfm env=test=test start"))
+	// fmt.Println(f.setupFileForProcessing())
+	// fmt.Println(f.getPragmaForLine("# test"))
+	// fmt.Println(f.getPragmaForLine("# @dfm"))
+	// fmt.Println(f.getPragmaForLine("# @dfm start"))
+	// fmt.Println(f.getPragmaForLine("// @dfm start"))
+	// fmt.Println(f.getPragmaForLine("# @dfm host=test"))
+	// fmt.Println(f.getPragmaForLine("# @dfm host=test start"))
+	// fmt.Println(f.getPragmaForLine("# @dfm env=test=test start"))
 
-	// 	f = NewFile(`
+	// f = NewFile(`
 	// // some comment
 	// // @dfm start
 	// something
@@ -152,9 +152,9 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// // @dfm end
 	// more
 	// 	`)
-	// 	fmt.Println(f.Process())
+	// fmt.Println(f.Process())
 
-	// 	f = NewFile(`
+	// f = NewFile(`
 	// 	// some comment
 	// 	// @dfm os=linux
 	// 	something
@@ -162,9 +162,9 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// 	// @dfm end
 	// 	more
 	// 		`)
-	// 	fmt.Println(f.Process())
+	// fmt.Println(f.Process())
 
-	// 	f = NewFile(`
+	// f = NewFile(`
 	// 	// some comment
 	// 	// @dfm os=linux
 	// 	something
@@ -172,9 +172,19 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// 	again
 	// 	more
 	// 		`)
-	// 	fmt.Println(f.Process())
+	// fmt.Println(f.Process())
 
-	// 	f = NewFile(`
+	// f = NewFile(`
+	// 	// some comment
+	// 	// @dfm os=linux
+	// 	// something
+	// 	// @dfm os=darwin
+	// 	// again
+	// 	more
+	// 		`)
+	// fmt.Println(f.Process())
+
+	// f = NewFile(`
 	// 	// some comment
 	// 	// @dfm os=linux start
 	// 	something
@@ -183,9 +193,9 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// 	// @dfm end
 	// 	more
 	// 		`)
-	// 	fmt.Println(f.Process())
+	// fmt.Println(f.Process())
 
-	// 	f = NewFile(`
+	// f = NewFile(`
 	// 	# some comment
 	// 	# @dfm os=darwin start
 	// 	something
@@ -194,12 +204,29 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// 	# @dfm end
 	// 	more
 	// 		`)
-	// 	fmt.Println(f.Process())
+	// fmt.Println(f.Process())
+
+	// f = NewFile(`
+	// # @dfm os=linux
+	// # again
+	// more
+	// 	`)
+	// fmt.Println(f.Process())
 
 	f = NewFile(`
-	# @dfm os=linux
-	# again
-	more
+# @dfm os=darwin start
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+  trustexitcode = true
+[merge]
+  tool = Kaleidoscope
+[difftool "Kaleidoscope"]
+  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+# @dfm end 
+[color]
+  diff = auto
+  status = auto
+  branch = auto
 		`)
 	fmt.Println(f.Process())
 }
