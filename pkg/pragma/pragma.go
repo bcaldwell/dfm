@@ -1,8 +1,10 @@
 package pragma
 
 import (
+	"fmt"
 	"os"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/bcaldwell/go-printer"
@@ -49,11 +51,91 @@ type File struct {
 	os       string
 }
 
-func (f *File) Process() error {
-	return nil
+func (f *File) Process() (string, error) {
+	err := f.setupFileForProcessing()
+	if err != nil {
+		return "", err
+	}
+
+	lines := strings.Split(f.FileContents, "\n")
+
+	// whether or not to comment next line
+	commentNextLine := false
+	uncommentNextLine := false
+	// whether or not we are current in a comment block
+	commentBlock := false
+
+	for i, line := range lines {
+		if ok, pragma := f.getPragmaForLine(line); ok {
+			nextLine, blockStart, blockEnd := f.processPragma(pragma)
+			if blockStart {
+				commentBlock = true
+			} else if blockEnd {
+				commentBlock = false
+			}
+
+			commentNextLine = nextLine
+			uncommentNextLine = !nextLine
+
+			// set comment to current line comment if unset
+			if f.CommentString == "" {
+				f.CommentString = strings.Fields(line)[0]
+			}
+
+			continue
+		}
+
+		if commentNextLine {
+			lines[i] = f.comment(line)
+			commentNextLine = false
+
+			continue
+		} else if uncommentNextLine {
+			lines[i] = f.unComment(line)
+			continue
+		}
+
+		if commentBlock {
+			lines[i] = f.comment(line)
+		}
+	}
+
+	return strings.Join(lines, "\n"), nil
 }
 
-func (f *File) generateRegex() error {
+// this isnt working if the comment is the start of the line
+func (f *File) unComment(line string) string {
+	if strings.HasPrefix(line, f.CommentString) {
+		// remove comment by removing the first x characters and a space where x is the length of the comment
+		commentLength := len(f.CommentString) + 1
+		line = line[commentLength:]
+	}
+
+	return line
+}
+
+func (f *File) comment(line string) string {
+	if !strings.HasPrefix(line, f.CommentString) {
+		line = fmt.Sprintf("%s %v", f.CommentString, line)
+	}
+
+	return line
+}
+
+func (f *File) setupFileForProcessing() error {
+	if f.os == "" {
+		f.os = runtime.GOOS
+	}
+
+	if f.hostname == "" {
+		h, err := os.Hostname()
+		if err != nil {
+			return err
+		}
+
+		f.hostname = h
+	}
+
 	r, err := regexp.Compile(`^\W+ @` + f.PragmaName + ` (.+)@?`)
 	if err != nil {
 		return err
@@ -75,8 +157,8 @@ func (f *File) getPragmaForLine(line string) (bool, parsedPragma) {
 
 	pragmaParts := strings.Fields(matches[0])
 
-	// skip the first pragma part since itll be @name so we dont care about that one
-	for _, p := range pragmaParts[1:] {
+	// skip the first 2 pragma parts since it'll be cooment string and @name so we don't care about those
+	for _, p := range pragmaParts[2:] {
 		// split by the first equal sign
 		i := strings.Index(p, "=")
 
@@ -108,7 +190,7 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 			pragmaParsed = true
 
 		case "host":
-			if f.hostname != v {
+			if strings.EqualFold(f.hostname, v) {
 				commentLine = false
 			}
 
@@ -121,21 +203,21 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 				continue
 			}
 
-			if os.Getenv(envParts[0]) != envParts[1] {
+			if strings.EqualFold(os.Getenv(envParts[0]), envParts[1]) {
 				commentLine = false
 			}
 
 			pragmaParsed = true
 
 		case "os":
-			if f.os != v {
+			if strings.EqualFold(f.os, v) {
 				commentLine = false
 			}
 
 			pragmaParsed = true
 
 		default:
-			printer.Warning("Unknown pragam found: %v=k", v, k)
+			printer.Warning("Unknown pragam found: %v=%v", k, v)
 		}
 	}
 

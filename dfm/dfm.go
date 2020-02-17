@@ -47,8 +47,8 @@ var (
 
 // Execute kicks of dfm command
 func Execute() {
-
 	var configFile string
+
 	var config *Configuration
 
 	var rootCmd = &cobra.Command{

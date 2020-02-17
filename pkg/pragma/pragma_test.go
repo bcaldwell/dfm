@@ -54,7 +54,7 @@ func TestFile_Process(t *testing.T) {
 				CommentString:   tt.fields.CommentString,
 				pragmaLineRegex: tt.fields.pragmaLineRegex,
 			}
-			if err := p.Process(); (err != nil) != tt.wantErr {
+			if _, err := p.Process(); (err != nil) != tt.wantErr {
 				t.Errorf("File.Process() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -85,7 +85,7 @@ func TestFile_GenerateRegex(t *testing.T) {
 				CommentString:   tt.fields.CommentString,
 				pragmaLineRegex: tt.fields.pragmaLineRegex,
 			}
-			if err := f.generateRegex(); (err != nil) != tt.wantErr {
+			if err := f.setupFileForProcessing(); (err != nil) != tt.wantErr {
 				t.Errorf("File.generateRegex() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -135,13 +135,73 @@ func TestFile_getPragmaForLine(t *testing.T) {
 
 func TestFile_getPragmaForLine2(t *testing.T) {
 	f := NewFile("")
-	fmt.Println(f.generateRegex())
+	fmt.Println(f.setupFileForProcessing())
 	fmt.Println(f.getPragmaForLine("# test"))
 	fmt.Println(f.getPragmaForLine("# @dfm"))
 	fmt.Println(f.getPragmaForLine("# @dfm start"))
+	fmt.Println(f.getPragmaForLine("// @dfm start"))
 	fmt.Println(f.getPragmaForLine("# @dfm host=test"))
 	fmt.Println(f.getPragmaForLine("# @dfm host=test start"))
 	fmt.Println(f.getPragmaForLine("# @dfm env=test=test start"))
+
+	// 	f = NewFile(`
+	// // some comment
+	// // @dfm start
+	// something
+	// again
+	// // @dfm end
+	// more
+	// 	`)
+	// 	fmt.Println(f.Process())
+
+	// 	f = NewFile(`
+	// 	// some comment
+	// 	// @dfm os=linux
+	// 	something
+	// 	again
+	// 	// @dfm end
+	// 	more
+	// 		`)
+	// 	fmt.Println(f.Process())
+
+	// 	f = NewFile(`
+	// 	// some comment
+	// 	// @dfm os=linux
+	// 	something
+	// 	// @dfm os=darwin
+	// 	again
+	// 	more
+	// 		`)
+	// 	fmt.Println(f.Process())
+
+	// 	f = NewFile(`
+	// 	// some comment
+	// 	// @dfm os=linux start
+	// 	something
+	// 	// @dfm os=darwin
+	// 	again
+	// 	// @dfm end
+	// 	more
+	// 		`)
+	// 	fmt.Println(f.Process())
+
+	// 	f = NewFile(`
+	// 	# some comment
+	// 	# @dfm os=darwin start
+	// 	something
+	// 	# @dfm os=linux
+	// 	again
+	// 	# @dfm end
+	// 	more
+	// 		`)
+	// 	fmt.Println(f.Process())
+
+	f = NewFile(`
+	# @dfm os=linux
+	# again
+	more
+		`)
+	fmt.Println(f.Process())
 }
 
 func TestFile_processPragma(t *testing.T) {
