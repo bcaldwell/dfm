@@ -214,19 +214,22 @@ func TestFile_getPragmaForLine2(t *testing.T) {
 	// fmt.Println(f.Process())
 
 	f = NewFile(`
-# @dfm os=darwin start
-[mergetool "Kaleidoscope"]
-	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-  trustexitcode = true
-[merge]
-  tool = Kaleidoscope
-[difftool "Kaleidoscope"]
-  cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
-# @dfm end 
-[color]
-  diff = auto
-  status = auto
-  branch = auto
+	# @dfm os=linux start
+	[mergetool "Kaleidoscope"]
+	  # cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+	  # trustexitcode = true
+	# [merge]
+	  # tool = Kaleidoscope
+	# [difftool "Kaleidoscope"]
+	  # cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+	# @dfm end
+	
+	[color]
+	  diff = auto
+	  status = auto
+	  branch = auto
+	[core]
+	  whitespace = fix
 		`)
 	fmt.Println(f.Process())
 }
