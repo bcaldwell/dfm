@@ -243,8 +243,8 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 	}
 
 	// only enable commentBlock if commentLine is false, aka the other pragmas in the line were true
-	commentBlockStart = commentBlockStart && commentLine
-	commentBlockEnd = commentBlockEnd && commentLine
+	// commentBlockStart = commentBlockStart && commentLine
+	// commentBlockEnd = commentBlockEnd && commentLine
 
 	if commentBlockEnd {
 		commentLine = false
