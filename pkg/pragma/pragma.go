@@ -70,14 +70,17 @@ func (f *File) Process() (string, error) {
 		if ok, pragma := f.getPragmaForLine(line); ok {
 			nextLine, blockStart, blockEnd := f.processPragma(pragma)
 
+			commentNextLine = nextLine
+			uncommentNextLine = !nextLine
+
 			if blockStart {
 				commentBlock = true
 			} else if blockEnd {
 				commentBlock = false
-			}
 
-			commentNextLine = nextLine
-			uncommentNextLine = !nextLine
+				commentNextLine = false
+				uncommentNextLine = false
+			}
 
 			// set comment to current line comment if unset
 			if f.CommentString == "" {
