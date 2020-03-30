@@ -41,5 +41,4 @@ func TestIntegration(t *testing.T) {
 		expected = fmt.Sprintf("really important configuration file for %s", runtime.GOOS)
 		So(string(compiledContents), ShouldEqual, expected)
 	})
-
 }

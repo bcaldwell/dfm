@@ -56,13 +56,16 @@ func Execute() {
 		Short: "Another way to manage dotfiles",
 		Run: func(cmd *cobra.Command, args []string) {
 			// Do Stuff Here
-			cmd.Help()
+			err := cmd.Help()
+			if err != nil {
+				printer.ErrorBar("Failed to show help - %s", err)
+			}
 		},
 	}
 
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose ouput")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dryrun", false, "prints changes")
-	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "force ouput")
+	rootCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "force output")
 	rootCmd.PersistentFlags().BoolVarP(&overwrite, "overwrite", "o", false, "overwrite existing files or folders when linking")
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "sets location of dfm config file or url with config file. Defaults to ~/.dfm.yml.")
 	rootCmd.PersistentFlags().StringVar(&destDir, "destdir", "", "sets the destination directory. Overwrites destdir in configuration file")
@@ -227,7 +230,9 @@ func getConfig(configFile string) (config *Configuration) {
 	err = config.Parse(config.configFile)
 	utilities.FatalErrorCheck(err, fmt.Sprintf("Unable to parse configuration file: %s", configFile))
 
-	config.SetDefaults()
+	err = config.SetDefaults()
+	utilities.FatalErrorCheck(err, fmt.Sprintf("Unable to set defaults on configuration: %s", err))
+
 	if destDir != "" {
 		config.DestDir = destDir
 	}
@@ -236,7 +241,9 @@ func getConfig(configFile string) (config *Configuration) {
 		err = cloneRepo(config.Repo, config.SrcDir)
 		utilities.FatalErrorCheck(err, "Unable to clone desired repo")
 	}
+
 	setenv(config)
+
 	return config
 }
 
@@ -245,17 +252,21 @@ func detectHomeDir() (homeDir string, err error) {
 	if homeDir == "" {
 		err = ErrNoHomeEnv
 	}
-	return
+
+	return homeDir, err
 }
 
 func printFlagOptions() {
 	printer.VerboseInfoBar("Running in verbose mode")
+
 	if dryRun {
 		printer.VerboseInfoBar("Running in dryrun mode")
 	}
+
 	if force {
 		printer.VerboseInfoBar("Running in force mode")
 	}
+
 	if overwrite {
 		printer.VerboseInfoBar("Running in overwrite mode")
 	}
@@ -263,12 +274,14 @@ func printFlagOptions() {
 
 func detectConfigFile(configFileFlag, homeDir string) (configFile string, err error) {
 	var configURL string
+
 	rcFile := determineRcFile(homeDir)
 
 	if configFileFlag == "" {
 		if _, err := Fs.Stat(rcFile); err == nil {
 			dat, err := ioutil.ReadFile(rcFile)
 			utilities.FatalErrorCheck(err, "Couldn't read .dfmrc file")
+
 			configFile = string(dat)
 		} else {
 			configFile, err = detectDefaultConfigFileLocation()
@@ -294,6 +307,7 @@ func detectConfigFile(configFileFlag, homeDir string) (configFile string, err er
 	}
 
 	printer.VerboseInfoBar("Using configuration file located at %s", configFile)
+
 	return configFile, err
 }
 
@@ -315,10 +329,13 @@ func createDfmrc(homeDir, configFile, scrDir string) {
 				return
 			}
 		}
+
 		if path.Base(scrDir) == ".dotfiles" {
 			return
 		}
+
 		fmt.Println()
+
 		if utilities.AskForConfirmation("set default configuration to " + configFile + "?") {
 			err := ioutil.WriteFile(rcFile, []byte(configFile), 0644)
 			utilities.ErrorCheck(err, "writing ~/.dfmrc file")
@@ -332,20 +349,24 @@ func determineRcFile(homeDir string) string {
 
 func cloneRepo(repo, srcDir string) error {
 	printer.VerboseInfoBar("cloning %s to %s", repo, srcDir)
+
 	output, err := sh.Command("git", "clone", repo, srcDir).Output()
 	if err != nil {
 		printer.InfoBar(string(output))
 		printer.Fail("Failed to clone repo %s with %s", repo, err)
 	}
+
 	return err
 }
 
 func detectDefaultConfigFileLocation() (string, error) {
 	for _, file := range defaultConfigFiles {
 		file = os.ExpandEnv(file)
+
 		if _, err := Fs.Stat(file); err == nil {
 			return file, nil
 		}
 	}
+
 	return "", ErrNoConfigFile
 }
