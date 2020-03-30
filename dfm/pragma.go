@@ -42,11 +42,37 @@ func applyPragmaToFolder(folder string) error {
 			}
 		} else {
 			printer.InfoBar("Processing pragma on %s", filePath)
-			err = pragma.ProcessFile(filePath, nil)
+			err = processPragmaFile(filePath, f.Mode())
 			if err != nil {
 				printer.ErrorBar("error processing file %v", err)
 			}
 		}
+	}
+
+	return nil
+}
+
+func processPragmaFile(file string, mode os.FileMode) error {
+	folderName := filepath.Base(file)
+	if _, err := os.Stat(filepath.Join(folderName, ignoreFile)); !os.IsNotExist(err) {
+		return err
+	}
+
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	p := pragma.NewFile(string(b))
+
+	s, err := p.Process()
+	if err != nil {
+		return nil
+	}
+
+	err = ioutil.WriteFile(file, []byte(s), mode)
+	if err != nil {
+		return err
 	}
 
 	return nil

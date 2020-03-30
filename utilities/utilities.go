@@ -19,11 +19,12 @@ func StringInSlice(a string, list []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
+// UniqueSliceTransform returns a version of an array of strings with only 1 instance of each element
 func UniqueSliceTransform(a []string) (output []string) {
-
 	for _, s := range a {
 		output = AppendIfUnique(output, s)
 	}
@@ -31,12 +32,14 @@ func UniqueSliceTransform(a []string) (output []string) {
 	return output
 }
 
+// AppendIfUnique appends a string to a slice if the string does not already exist in the slice
 func AppendIfUnique(slice []string, i string) []string {
 	for _, ele := range slice {
 		if ele == i {
 			return slice
 		}
 	}
+
 	return append(slice, i)
 }
 
@@ -51,14 +54,17 @@ func ErrorCheck(err error, message string) bool {
 		printer.Fail("%s failed with %s", message, err)
 		return true
 	}
+
 	return false
 }
 
+// AbsPath finds the absolute path of a file and joins the defaultRoot path if is not absolute
 func AbsPath(file, defaultRoot string) (abs string) {
 	abs = os.ExpandEnv(file)
 	if !path.IsAbs(abs) {
 		abs = path.Join(defaultRoot, abs)
 	}
+
 	return abs
 }
 

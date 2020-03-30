@@ -6,7 +6,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/bcaldwell/go-sh/mock"
+	shMock "github.com/bcaldwell/go-sh/mock"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 )
@@ -49,8 +49,9 @@ func Test_createDfmrc(t *testing.T) {
 		name string
 		args args
 	}{
-	// TODO: Add test cases.
+		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			createDfmrc(tt.args.homeDir, tt.args.configFile, tt.args.scrDir)
@@ -69,7 +70,8 @@ func Test_cloneRepo(t *testing.T) {
 	defer shMock.UseMock()
 
 	srcDir, err := ioutil.TempDir("", "dfm-clone")
-	Fs.MkdirAll(srcDir, 0755)
+	_ = Fs.MkdirAll(srcDir, 0755)
+
 	defer Fs.RemoveAll("srcDir")
 	Convey("Should clone given repo to given source directory", t, func() {
 		So(err, ShouldEqual, nil)
@@ -157,8 +159,9 @@ func Test_detectConfigFile(t *testing.T) {
 		wantConfigFile string
 		wantErr        bool
 	}{
-	// TODO: Add test cases.
+		// TODO: Add test cases.
 	}
+	
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotConfigFile, err := detectConfigFile(tt.args.configFileFlag, tt.args.homeDir)
