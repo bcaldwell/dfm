@@ -135,83 +135,83 @@ func TestFile_getPragmaForLine(t *testing.T) {
 
 func TestFile_getPragmaForLine2(t *testing.T) {
 	f := NewFile("")
-	// fmt.Println(f.setupFileForProcessing())
-	// fmt.Println(f.getPragmaForLine("# test"))
-	// fmt.Println(f.getPragmaForLine("# @dfm"))
-	// fmt.Println(f.getPragmaForLine("# @dfm start"))
-	// fmt.Println(f.getPragmaForLine("// @dfm start"))
-	// fmt.Println(f.getPragmaForLine("# @dfm host=test"))
-	// fmt.Println(f.getPragmaForLine("# @dfm host=test start"))
-	// fmt.Println(f.getPragmaForLine("# @dfm env=test=test start"))
+	fmt.Println(f.setupFileForProcessing())
+	fmt.Println(f.getPragmaForLine("# test"))
+	fmt.Println(f.getPragmaForLine("# @dfm"))
+	fmt.Println(f.getPragmaForLine("# @dfm start"))
+	fmt.Println(f.getPragmaForLine("// @dfm start"))
+	fmt.Println(f.getPragmaForLine("# @dfm host=test"))
+	fmt.Println(f.getPragmaForLine("# @dfm host=test start"))
+	fmt.Println(f.getPragmaForLine("# @dfm env=test=test start"))
 
-	// f = NewFile(`
-	// // some comment
-	// // @dfm start
-	// something
-	// again
-	// // @dfm end
-	// more
-	// 	`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+	// some comment
+	// @dfm start
+	something
+	again
+	// @dfm end
+	more
+		`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// 	// some comment
-	// 	// @dfm os=linux
-	// 	something
-	// 	again
-	// 	// @dfm end
-	// 	more
-	// 		`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+		// some comment
+		// @dfm os=linux
+		something
+		again
+		// @dfm end
+		more
+			`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// 	// some comment
-	// 	// @dfm os=linux
-	// 	something
-	// 	// @dfm os=darwin
-	// 	again
-	// 	more
-	// 		`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+		// some comment
+		// @dfm os=linux
+		something
+		// @dfm os=darwin
+		again
+		more
+			`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// 	// some comment
-	// 	// @dfm os=linux
-	// 	// something
-	// 	// @dfm os=darwin
-	// 	// again
-	// 	more
-	// 		`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+		// some comment
+		// @dfm os=linux
+		// something
+		// @dfm os=darwin
+		// again
+		more
+			`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// 	// some comment
-	// 	// @dfm os=linux start
-	// 	something
-	// 	// @dfm os=darwin
-	// 	again
-	// 	// @dfm end
-	// 	more
-	// 		`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+		// some comment
+		// @dfm os=linux start
+		something
+		// @dfm os=darwin
+		again
+		// @dfm end
+		more
+			`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// 	# some comment
-	// 	# @dfm os=darwin start
-	// 	something
-	// 	# @dfm os=linux
-	// 	again
-	// 	# @dfm end
-	// 	more
-	// 		`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+		# some comment
+		# @dfm os=darwin start
+		something
+		# @dfm os=linux
+		again
+		# @dfm end
+		more
+			`)
+	fmt.Println(f.Process())
 
-	// f = NewFile(`
-	// # @dfm os=linux
-	// # again
-	// more
-	// 	`)
-	// fmt.Println(f.Process())
+	f = NewFile(`
+	# @dfm os=linux
+	# again
+	more
+		`)
+	fmt.Println(f.Process())
 
 	f = NewFile(`
 	# @dfm os=linux start
@@ -257,55 +257,55 @@ func TestFile_processPragma(t *testing.T) {
 		wantCommentBlockEnd   bool
 	}{
 		{
-			name:                  "",
+			name:                  "host",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"host": "test-host"}},
-			wantCommentLine:       true,
-			wantCommentBlockStart: false,
-			wantCommentBlockEnd:   false,
-		},
-		{
-			name:                  "",
-			fields:                fields{hostname: "test-host", os: "linux"},
-			args:                  args{pragma: parsedPragma{"host": "test-host", "os": "darwin"}},
 			wantCommentLine:       false,
 			wantCommentBlockStart: false,
 			wantCommentBlockEnd:   false,
 		},
 		{
-			name:                  "",
+			name:                  "host and os",
 			fields:                fields{hostname: "test-host", os: "linux"},
-			args:                  args{pragma: parsedPragma{"host": "test-host", "os": "linux"}},
+			args:                  args{pragma: parsedPragma{"host": "test-host", "os": "darwin"}},
 			wantCommentLine:       true,
 			wantCommentBlockStart: false,
 			wantCommentBlockEnd:   false,
 		},
 		{
-			name:                  "",
+			name:                  "host and os negative",
+			fields:                fields{hostname: "test-host", os: "linux"},
+			args:                  args{pragma: parsedPragma{"host": "test-host", "os": "linux"}},
+			wantCommentLine:       false,
+			wantCommentBlockStart: false,
+			wantCommentBlockEnd:   false,
+		},
+		{
+			name:                  "host conditional start",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"host": "test-host", "start": ""}},
-			wantCommentLine:       true,
+			wantCommentLine:       false,
 			wantCommentBlockStart: true,
 			wantCommentBlockEnd:   false,
 		},
 		{
-			name:                  "",
+			name:                  "env set",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"env": "TEST=set"}},
-			wantCommentLine:       true,
-			wantCommentBlockStart: false,
-			wantCommentBlockEnd:   false,
-		},
-		{
-			name:                  "",
-			fields:                fields{hostname: "test-host", os: "linux"},
-			args:                  args{pragma: parsedPragma{"env": "TEST=unset"}},
 			wantCommentLine:       false,
 			wantCommentBlockStart: false,
 			wantCommentBlockEnd:   false,
 		},
 		{
-			name:                  "",
+			name:                  "env unset",
+			fields:                fields{hostname: "test-host", os: "linux"},
+			args:                  args{pragma: parsedPragma{"env": "TEST=unset"}},
+			wantCommentLine:       true,
+			wantCommentBlockStart: false,
+			wantCommentBlockEnd:   false,
+		},
+		{
+			name:                  "end",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"end": ""}},
 			wantCommentLine:       false,
@@ -313,7 +313,7 @@ func TestFile_processPragma(t *testing.T) {
 			wantCommentBlockEnd:   true,
 		},
 		{
-			name:                  "",
+			name:                  "host conditional end",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"host": "test-host", "end": ""}},
 			wantCommentLine:       false,
@@ -321,10 +321,10 @@ func TestFile_processPragma(t *testing.T) {
 			wantCommentBlockEnd:   true,
 		},
 		{
-			name:                  "",
+			name:                  "negative host conditional end",
 			fields:                fields{hostname: "test-host", os: "linux"},
 			args:                  args{pragma: parsedPragma{"host": "test-host-wrong", "end": ""}},
-			wantCommentLine:       false,
+			wantCommentLine:       true,
 			wantCommentBlockStart: false,
 			wantCommentBlockEnd:   false,
 		},
@@ -347,10 +347,10 @@ func TestFile_processPragma(t *testing.T) {
 				t.Errorf("File.processPragma() gotCommentLine = %v, want %v", gotCommentLine, tt.wantCommentLine)
 			}
 			if gotCommentBlockStart != tt.wantCommentBlockStart {
-				t.Errorf("File.processPragma() gotCommentBlock = %v, want %v", gotCommentBlockStart, tt.wantCommentBlockStart)
+				t.Errorf("File.processPragma() gotCommentBlockStart = %v, want %v", gotCommentBlockStart, tt.wantCommentBlockStart)
 			}
 			if gotCommentBlockEnd != tt.wantCommentBlockEnd {
-				t.Errorf("File.processPragma() gotCommentBlock = %v, want %v", gotCommentBlockEnd, tt.wantCommentBlockEnd)
+				t.Errorf("File.processPragma() gotCommentBlockEnd = %v, want %v", gotCommentBlockEnd, tt.wantCommentBlockEnd)
 			}
 		})
 	}

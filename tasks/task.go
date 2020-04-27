@@ -23,7 +23,6 @@ type Task struct {
 	Cmd      []string
 	Links    []string
 	Env      []string
-	Vars     map[string]string
 	Template Template
 	Vars     DfmVars
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on

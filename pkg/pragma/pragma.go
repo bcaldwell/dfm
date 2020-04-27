@@ -221,11 +221,9 @@ func (f *File) getPragmaForLine(line string) (bool, parsedPragma) {
 // processPragma process a parsedPragma and returns if the next line or block should be commented
 func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBlockStart bool, commentBlockEnd bool) {
 	pragmaParsed := false
-	commentLine = true
+	commentLine = false
 	commentBlockStart = false
 	commentBlockEnd = false
-
-	fmt.Printf("%#v", pragma)
 
 	for k, v := range pragma {
 		switch strings.ToLower(k) {
@@ -236,10 +234,7 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 			commentBlockEnd = true
 
 		case "host":
-			if strings.EqualFold(f.hostname, v) {
-				commentLine = false
-			}
-
+			commentLine = commentLine || !strings.EqualFold(f.hostname, v)
 			pragmaParsed = true
 
 		case "env":
@@ -249,9 +244,7 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 				continue
 			}
 
-			if strings.EqualFold(os.Getenv(envParts[0]), envParts[1]) {
-				commentLine = false
-			}
+			commentLine = commentLine || !strings.EqualFold(os.Getenv(envParts[0]), envParts[1])
 
 			pragmaParsed = true
 
@@ -262,16 +255,12 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 				continue
 			}
 
-			if strings.EqualFold(f.Vars[parts[0]], parts[1]) {
-				commentLine = false
-			}
+			commentLine = commentLine || !strings.EqualFold(f.Vars[parts[0]], parts[1])
 
 			pragmaParsed = true
 
 		case "os":
-			if strings.EqualFold(f.os, v) {
-				commentLine = false
-			}
+			commentLine = commentLine || !strings.EqualFold(f.os, v)
 
 			pragmaParsed = true
 
@@ -286,8 +275,8 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 	}
 
 	// only enable commentBlock if commentLine is false, aka the other pragmas in the line were true
-	// commentBlockStart = commentBlockStart && commentLine
-	// commentBlockEnd = commentBlockEnd && commentLine
+	commentBlockStart = commentBlockStart && !commentLine
+	commentBlockEnd = commentBlockEnd && !commentLine
 
 	if commentBlockEnd {
 		commentLine = false
