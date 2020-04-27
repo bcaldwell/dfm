@@ -10,6 +10,8 @@ import (
 	"github.com/bcaldwell/go-sh"
 )
 
+type DfmVars map[string]string
+
 type Task struct {
 	When struct {
 		OS           string `yaml:"os"`
@@ -22,6 +24,7 @@ type Task struct {
 	Links    []string
 	Env      []string
 	Template Template
+	Vars     DfmVars
 	// 0 not enabled, 2 enabled, 1 can be enabled if dependent on
 	// importance byte
 }
@@ -134,6 +137,7 @@ func (t Task) Execute(name string) error {
 		err := processCmd(command)
 		if err != nil {
 			printer.Error("%s: %s", name, err)
+			return err
 		}
 	}
 
@@ -143,6 +147,7 @@ func (t Task) Execute(name string) error {
 		err := processTemplate(t.Template)
 		if err != nil {
 			printer.Error("%s: %s", name, err)
+			return err
 		}
 	}
 
@@ -151,9 +156,10 @@ func (t Task) Execute(name string) error {
 	}
 
 	for _, link := range t.Links {
-		err := processLink(link)
+		err := processLink(link, t.Vars)
 		if err != nil {
 			printer.Error("%s: %s", name, err)
+			return err
 		}
 	}
 

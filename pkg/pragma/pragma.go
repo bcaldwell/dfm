@@ -2,6 +2,7 @@ package pragma
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"runtime"
@@ -39,12 +40,36 @@ func NewFile(fileContents string) *File {
 	return f
 }
 
+func ProcessFile(file string, vars map[string]string) error {
+	fileStat, err := os.Stat(file)
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	p := NewFile(string(b))
+	p.Vars = vars
+
+	s, err := p.Process()
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(file, []byte(s), fileStat.Mode())
+}
+
 // File represents a file with pragmas that can be processed
 type File struct {
 	FileContents string
 
 	PragmaName    string
 	CommentString string
+
+	Vars map[string]string
 
 	pragmaLineRegex *regexp.Regexp
 
@@ -178,7 +203,7 @@ func (f *File) getPragmaForLine(line string) (bool, parsedPragma) {
 
 	pragmaParts := strings.Fields(matches[0])
 
-	// skip the first 2 pragma parts since it'll be cooment string and @name so we don't care about those
+	// skip the first 2 pragma parts since it'll be comment string and @name so we don't care about those
 	for _, p := range pragmaParts[2:] {
 		// split by the first equal sign
 		i := strings.Index(p, "=")
@@ -199,6 +224,8 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 	commentLine = true
 	commentBlockStart = false
 	commentBlockEnd = false
+
+	fmt.Printf("%#v", pragma)
 
 	for k, v := range pragma {
 		switch strings.ToLower(k) {
@@ -223,6 +250,19 @@ func (f *File) processPragma(pragma parsedPragma) (commentLine bool, commentBloc
 			}
 
 			if strings.EqualFold(os.Getenv(envParts[0]), envParts[1]) {
+				commentLine = false
+			}
+
+			pragmaParsed = true
+
+		case "var":
+			parts := strings.Split(v, "=")
+			if len(parts) != 2 {
+				printer.Warning("failed to get parse var pragma %v", v)
+				continue
+			}
+
+			if strings.EqualFold(f.Vars[parts[0]], parts[1]) {
 				commentLine = false
 			}
 

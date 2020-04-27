@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bcaldwell/dfm/pkg/pragma"
 	"github.com/bcaldwell/go-printer"
 )
 
@@ -44,13 +45,20 @@ func parseLink(params string) (string, string, os.FileMode, error) {
 	return src, dest, mode, nil
 }
 
-func processLink(params string) error {
+func processLink(params string, vars DfmVars) error {
 	src, dest, mode, err := parseLink(params)
-	if err == nil {
-		return createLink(src, dest, mode)
+	if err != nil {
+		return fmt.Errorf("failed to parse link %w", err)
 	}
 
-	return err
+	srcAbs := absPath(src, SrcDir)
+
+	err = pragma.ProcessFile(srcAbs, vars)
+	if err != nil {
+		return fmt.Errorf("failed to process pragma on link %s->%s %w", src, dest, err)
+	}
+
+	return createLink(src, dest, mode)
 }
 
 func createLink(src string, dest string, mode os.FileMode) error {

@@ -16,40 +16,6 @@ const (
 
 func pragmaAction(args []string, config *Configuration) error {
 	return applyPragmaToFolder(config.SrcDir)
-	// return filepath.Walk(config.SrcDir, func(path string, info os.FileInfo, err error) error {
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	if info.IsDir() {
-	// 		return nil
-	// 	}
-
-	// 	if filepath.Ext(path) == ".png" {
-	// 		return nil
-	// 	}
-	// 	if strings.Contains(path, ".dotfiles/.git") || strings.Contains(path, ".dotfiles/macos") {
-	// 		return nil
-	// 	}
-
-	// 	b, err := ioutil.ReadFile(path)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	p := pragma.NewFile(string(b))
-	// 	s, err := p.Process()
-	// 	if err != nil {
-	// 		return nil
-	// 	}
-
-	// 	err = ioutil.WriteFile(path, []byte(s), info.Mode())
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	return nil
-	// })
 }
 
 func applyPragmaToFolder(folder string) error {
@@ -76,31 +42,11 @@ func applyPragmaToFolder(folder string) error {
 			}
 		} else {
 			printer.InfoBar("Processing pragma on %s", filePath)
-			err = processPragmaFile(filePath, f.Mode())
+			err = pragma.ProcessFile(filePath, nil)
 			if err != nil {
 				printer.ErrorBar("error processing file %v", err)
 			}
 		}
-	}
-
-	return nil
-}
-
-func processPragmaFile(file string, mode os.FileMode) error {
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-
-	p := pragma.NewFile(string(b))
-	s, err := p.Process()
-	if err != nil {
-		return nil
-	}
-
-	err = ioutil.WriteFile(file, []byte(s), mode)
-	if err != nil {
-		return err
 	}
 
 	return nil
