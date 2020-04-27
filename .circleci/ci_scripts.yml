@@ -4,4 +4,5 @@ go:
 
 github:
   release:
+    path: .ci-build
     delete: true

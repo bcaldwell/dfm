@@ -11,7 +11,7 @@ jobs:
       CI_SCRIPTS_CONFIG: ./.circleci/ci_scripts.yml
       GITHUB_RELEASE_TAG: latest
       GO111MODULE: "on"
-      CGO_ENABLED: 0
+      CGO_ENABLED: "0"
 
     working_directory: /go/src/github.com/dfm
 
@@ -30,7 +30,7 @@ jobs:
       CI_SCRIPTS_CONFIG: ./.circleci/ci_scripts.yml
       GITHUB_RELEASE_TAG: latest
       GO111MODULE: "on"
-      CGO_ENABLED: 0
+      CGO_ENABLED: "0"
 
     working_directory: /go/src/github.com/dfm
 
