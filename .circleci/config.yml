@@ -48,4 +48,5 @@ workflows:
   release:
     jobs:
       - test
-      - release
+      - release:
+          context: github
