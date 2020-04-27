@@ -1,0 +1,51 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  test:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.14
+    environment:
+      CI_SCRIPTS_CONFIG: ./.circleci/ci_scripts.yml
+      GITHUB_RELEASE_TAG: latest
+      GO111MODULE: "on"
+      CGO_ENABLED: 0
+
+    working_directory: /go/src/github.com/dfm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install ci-scripts
+          command: wget -q -O - https://raw.githubusercontent.com/bcaldwell/ci-scripts/master/scripts/install.sh | sh
+      - run: ci-scripts go/test
+  release:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.14
+    environment:
+      CI_SCRIPTS_CONFIG: ./.circleci/ci_scripts.yml
+      GITHUB_RELEASE_TAG: latest
+      GO111MODULE: "on"
+      CGO_ENABLED: 0
+
+    working_directory: /go/src/github.com/dfm
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install ci-scripts
+          command: wget -q -O - https://raw.githubusercontent.com/bcaldwell/ci-scripts/master/scripts/install.sh | sh
+      - run: ci-scripts go/build
+      - run: ci-scripts github/release
+
+workflows:
+  version: 2
+  release:
+    jobs:
+      - test
+      - release
