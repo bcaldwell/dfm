@@ -1,6 +1,6 @@
 go:
   build:
-    go_build_args: -output .ci-build/{{.OS}}_{{.Arch}} -arch amd64 -os linux -os darwin
+    go_build_args: -output .ci-build/dfm_{{.OS}}_{{.Arch}} -arch amd64 -os linux -os darwin
 
 github:
   release:
