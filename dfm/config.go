@@ -3,6 +3,7 @@ package dfm
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 
@@ -39,7 +40,9 @@ func (c *Configuration) Parse(file string) error {
 
 	err = tpl.Execute(&data)
 	if err == nil {
-		err = yaml.Unmarshal(data.Bytes(), c)
+		expandedFile := os.ExpandEnv(data.String())
+
+		err = yaml.Unmarshal([]byte(expandedFile), c)
 		return err
 	}
 

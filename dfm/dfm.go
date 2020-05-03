@@ -1,7 +1,6 @@
 package dfm
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +13,7 @@ import (
 	"github.com/bcaldwell/go-sh"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -130,7 +130,7 @@ func Execute() {
 		Short: "print current configuration file",
 		Run: func(cmd *cobra.Command, args []string) {
 			var err error
-			var jsonConfig []byte
+			var configString []byte
 			config = getConfig(configFile)
 
 			if len(args) > 0 {
@@ -140,16 +140,16 @@ func Execute() {
 					return
 				}
 				printer.InfoBarIcon(" %s configuration", args[0])
-				jsonConfig, err = json.MarshalIndent(filteredConfig, "", "    ")
+				configString, err = yaml.Marshal(filteredConfig)
 			} else {
-				jsonConfig, err = json.MarshalIndent(config, "", "    ")
+				configString, err = yaml.Marshal(config)
 			}
 
 			if err != nil {
 				printer.ErrorBarIcon("Failed to parse json %s", err)
 				return
 			}
-			fmt.Println(string(jsonConfig))
+			fmt.Println(string(configString))
 		},
 	}
 
@@ -169,6 +169,30 @@ func Execute() {
 		Run: func(cmd *cobra.Command, args []string) {
 			config = getConfig(configFile)
 			fmt.Println(config.configFile)
+		},
+	}
+
+	shellInitCommand := &cobra.Command{
+		Use:   "shell-init",
+		Short: "Prints source for shell integration",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(utilities.Dedent(`
+			function dfm () {
+				if [ "$1" '==' "cd" ]
+				then
+				  cd $(command dfm path)
+					return 0
+				fi
+			  
+				if [ "$1" '==' "update" ]
+				then
+				  curl -o- https://raw.githubusercontent.com/benjamincaldwell/dfm/master/scripts/install.sh | bash
+				  return 0
+				fi
+			  
+				command dfm "$@"
+			  }			  
+			`))
 		},
 	}
 
@@ -193,6 +217,7 @@ func Execute() {
 		configCommand,
 		versionCommand,
 		configFileCommand,
+		shellInitCommand,
 	)
 
 	if err := rootCmd.Execute(); err != nil && !noDfmrcCreate {
@@ -224,7 +249,7 @@ func getConfig(configFile string) (config *Configuration) {
 	config.homeDir, err = detectHomeDir()
 	utilities.FatalErrorCheck(err, "determining user's homeDir")
 
-	config.configFile, err = detectConfigFile(config.configFile, config.homeDir)
+	config.configFile, err = detectConfigFile(config.homeDir, config.configFile)
 	utilities.FatalErrorCheck(err, "determining configuration file")
 
 	err = config.Parse(config.configFile)
@@ -272,7 +297,7 @@ func printFlagOptions() {
 	}
 }
 
-func detectConfigFile(configFileFlag, homeDir string) (configFile string, err error) {
+func detectConfigFile(homeDir, configFileFlag string) (configFile string, err error) {
 	var configURL string
 
 	rcFile := determineRcFile(homeDir)
